@@ -15,7 +15,6 @@ import 'logic/authprovider.dart';
 import 'logic/screenconfig.dart';
 import 'model/cartaplayer.dart';
 import 'screens/catalog/catalog.dart';
-import 'screens/booksite/booksite.dart';
 import 'screens/wrapper.dart';
 import 'shared/apptheme.dart';
 import 'shared/helpers.dart';
@@ -68,7 +67,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,14 +100,14 @@ class MyApp extends StatelessWidget {
                 return MaterialPageRoute(
                   builder: (context) => const CatalogPage(),
                 );
-              } else if (uri.path == '/newbook') {
-                // this is for the deeplink now broken in Android 12
-                final bookUrl = uri.queryParameters[0];
-                return MaterialPageRoute(
-                  builder: (context) => BookSitePage(
-                    url: bookUrl,
-                  ),
-                );
+                // } else if (uri.path == '/newbook') {
+                //   // this is for the deeplink now broken in Android 12
+                //   final bookUrl = uri.queryParameters[0];
+                //   return MaterialPageRoute(
+                //     builder: (context) => BookSitePage(
+                //       url: bookUrl,
+                //     ),
+                //   );
               }
             }
             return MaterialPageRoute(builder: (context) => const NotFound());

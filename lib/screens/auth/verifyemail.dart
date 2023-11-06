@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../logic/authprovider.dart';
 
 class VerifyEmailPage extends StatefulWidget {
-  const VerifyEmailPage({Key? key}) : super(key: key);
+  const VerifyEmailPage({super.key});
 
   @override
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();

@@ -7,7 +7,7 @@ import '../../shared/helpers.dart';
 
 class NextCloudSettings extends StatefulWidget {
   final CartaServer? server;
-  const NextCloudSettings({this.server, Key? key}) : super(key: key);
+  const NextCloudSettings({this.server, super.key});
 
   @override
   State<NextCloudSettings> createState() => _NextCloudSettingsState();

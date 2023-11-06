@@ -6,7 +6,7 @@ import '../../logic/cartabloc.dart';
 import '../../shared/flutter_icons.dart';
 
 class AccountPage extends StatefulWidget {
-  const AccountPage({Key? key}) : super(key: key);
+  const AccountPage({super.key});
 
   @override
   State<AccountPage> createState() => _AccountPageState();

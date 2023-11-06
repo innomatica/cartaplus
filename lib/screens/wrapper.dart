@@ -9,7 +9,7 @@ import 'auth/verifyemail.dart';
 import 'home/home.dart';
 
 class Wrapper extends StatelessWidget {
-  const Wrapper({Key? key}) : super(key: key);
+  const Wrapper({super.key});
 
   @override
   Widget build(BuildContext context) {

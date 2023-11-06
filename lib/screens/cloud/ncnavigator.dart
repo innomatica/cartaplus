@@ -14,7 +14,7 @@ import '../../shared/helpers.dart';
 
 class NextCloudNavigator extends StatefulWidget {
   final CartaServer server;
-  const NextCloudNavigator({required this.server, Key? key}) : super(key: key);
+  const NextCloudNavigator({required this.server, super.key});
 
   @override
   State<NextCloudNavigator> createState() => _NextCloudNavigatorState();
