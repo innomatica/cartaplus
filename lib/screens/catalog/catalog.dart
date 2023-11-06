@@ -22,7 +22,6 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
   Future _buildPanelData() async {
-    // debugPrint('buildPanelData');
     final cards = await bloc.getSampleBookCards();
 
     for (final card in cards) {
@@ -42,7 +41,7 @@ class _CatalogPageState extends State<CatalogPage> {
         });
       }
     }
-
+    // debugPrint('buildPanelData: $panelData');
     setState(() {});
   }
 
@@ -58,7 +57,9 @@ class _CatalogPageState extends State<CatalogPage> {
           child: ExpansionPanelList(
             expansionCallback: (index, isExpanded) {
               setState(() {
-                panelData[index]['isExpanded'] = !isExpanded;
+                // https://github.com/flutter/flutter/issues/132759
+                // https://github.com/flutter/flutter/pull/128082
+                panelData[index]['isExpanded'] = isExpanded;
               });
             },
             children: panelData.map(
@@ -93,6 +94,14 @@ class _CatalogPageState extends State<CatalogPage> {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                         content: Text('book added'),
+                                      ));
+                                    }
+                                  } else {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                            'Sorry, failed to find the book data.'),
                                       ));
                                     }
                                   }

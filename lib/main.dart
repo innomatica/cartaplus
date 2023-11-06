@@ -1,3 +1,4 @@
+import 'package:cartaplus/service/audiohandler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -5,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +13,6 @@ import 'firebase_options.dart';
 import 'logic/cartabloc.dart';
 import 'logic/authprovider.dart';
 import 'logic/screenconfig.dart';
-import 'model/cartaplayer.dart';
 import 'screens/catalog/catalog.dart';
 import 'screens/wrapper.dart';
 import 'shared/apptheme.dart';
@@ -49,29 +48,16 @@ void main() async {
     }
   }
 
-  // just audio
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-    // check https://github.com/ryanheise/just_audio/issues/619
-    androidNotificationIcon: 'drawable/app_icon',
-  );
+  // audio handler
+  final CartaAudioHandler handler = await createAudioHandler();
 
   // application documents directory
   final appDocDir = await getApplicationDocumentsDirectory();
   appDocDirPath = appDocDir.path;
 
   // start app
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  runApp(
+    MultiProvider(
       providers: [
         ChangeNotifierProvider<ScreenConfig>(
             create: (context) => ScreenConfig()),
@@ -79,45 +65,57 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<CartaBloc>(
           create: (context) => CartaBloc(auth: context.read<AuthProvider>()),
         ),
-        Provider<CartaPlayer>(
-            create: (context) => CartaPlayer(bloc: context.read<CartaBloc>()),
-            dispose: (_, player) => player.dispose()),
+        Provider<CartaAudioHandler>(
+            create: (context) {
+              handler.setLogic(context.read<CartaBloc>());
+              return handler;
+            },
+            dispose: (_, __) => handler.dispose()),
       ],
-      child: DynamicColorBuilder(
-          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          title: "Carta",
-          initialRoute: '/',
-          onGenerateRoute: (settings) {
-            if (settings.name != null) {
-              final uri = Uri.parse(settings.name!);
-              debugPrint('path: ${uri.path}');
-              debugPrint('params: ${uri.queryParameters}');
+      child: const MyApp(),
+    ),
+  );
+}
 
-              if (uri.path == '/') {
-                return MaterialPageRoute(builder: (context) => const Wrapper());
-              } else if (uri.path == '/selected') {
-                return MaterialPageRoute(
-                  builder: (context) => const CatalogPage(),
-                );
-                // } else if (uri.path == '/newbook') {
-                //   // this is for the deeplink now broken in Android 12
-                //   final bookUrl = uri.queryParameters[0];
-                //   return MaterialPageRoute(
-                //     builder: (context) => BookSitePage(
-                //       url: bookUrl,
-                //     ),
-                //   );
-              }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      return MaterialApp(
+        title: "Carta",
+        initialRoute: '/',
+        onGenerateRoute: (settings) {
+          if (settings.name != null) {
+            final uri = Uri.parse(settings.name!);
+            // debugPrint('path: ${uri.path}');
+            // debugPrint('params: ${uri.queryParameters}');
+
+            if (uri.path == '/') {
+              return MaterialPageRoute(builder: (context) => const Wrapper());
+            } else if (uri.path == '/selected') {
+              return MaterialPageRoute(
+                builder: (context) => const CatalogPage(),
+              );
+              // } else if (uri.path == '/newbook') {
+              //   // this is for the deeplink now broken in Android 12
+              //   final bookUrl = uri.queryParameters[0];
+              //   return MaterialPageRoute(
+              //     builder: (context) => BookSitePage(
+              //       url: bookUrl,
+              //     ),
+              //   );
             }
-            return MaterialPageRoute(builder: (context) => const NotFound());
-          },
-          theme: AppTheme.lightTheme(lightDynamic),
-          darkTheme: AppTheme.darkTheme(darkDynamic),
-          // home: const Home(),
-          debugShowCheckedModeBanner: false,
-        );
-      }),
-    );
+          }
+          return MaterialPageRoute(builder: (context) => const NotFound());
+        },
+        theme: AppTheme.lightTheme(lightDynamic),
+        darkTheme: AppTheme.darkTheme(darkDynamic),
+        // home: const Home(),
+        debugShowCheckedModeBanner: false,
+      );
+    });
   }
 }
