@@ -19,4 +19,8 @@ necessay files from this repo. The process goes like this roughly.
 ## TODO
 
 - Redesign Instruction page
-- Replace hamburger menu with FAB
+- ~Replace hamburger menu with FAB~
+- Delete email login option => change login page
+- Account page => Settings page
+  - add WebDav server management
+- Fix privilege issue when sign out

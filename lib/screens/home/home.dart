@@ -13,11 +13,11 @@ import '../../shared/booksites.dart';
 import '../../shared/constants.dart';
 import '../../shared/settings.dart';
 import '../about/about.dart';
-import '../auth/account.dart';
+import '../auth/settings.dart';
 import '../book/bookpanel.dart';
 import '../catalog/catalog.dart';
 import '../booksite/booksite.dart';
-import 'instruction.dart';
+// import 'instruction.dart';
 import 'library.dart';
 import 'player.dart';
 import 'widgets.dart';
@@ -89,26 +89,7 @@ class _HomePageState extends State<HomePage> {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.menu_rounded),
       onSelected: (String item) {
-        if (item == 'LibriVox') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                const BookSitePage(url: urlLibriVoxSearchByAuthor),
-          ));
-        } else if (item == 'Internet Archive') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                const BookSitePage(url: urlInternetArchiveAudio),
-          ));
-        } else if (item == 'Legamus') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) =>
-                const BookSitePage(url: urlLegamusAllRecordings),
-          ));
-        } else if (item == 'Selected Books') {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const CatalogPage(),
-          ));
-        } else if (item == 'Set Sleep Timer') {
+        if (item == 'Set Sleep Timer') {
           if (_sleepTimer != null) {
             _sleepTimer!.cancel();
             _sleepTimer = null;
@@ -135,65 +116,15 @@ class _HomePageState extends State<HomePage> {
           setState(() {});
         } else if (item == 'How To') {
           launchUrl(Uri.parse(urlInstruction));
-        } else if (item == 'Account') {
+        } else if (item == 'Settings') {
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AccountPage()));
+              MaterialPageRoute(builder: (context) => const SettingsPage()));
         } else if (item == 'About') {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => const AboutPage()));
         }
       },
       itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          value: 'LibriVox',
-          child: Row(
-            children: [
-              CartaBook.getIconBySource(
-                CartaSource.librivox,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 8.0),
-              const Text('LibriVox'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'Internet Archive',
-          child: Row(
-            children: [
-              CartaBook.getIconBySource(
-                CartaSource.archive,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 8.0),
-              const Text('Internet Archive'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'Legamus',
-          child: Row(
-            children: [
-              CartaBook.getIconBySource(
-                CartaSource.legamus,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(width: 8.0),
-              const Text('Legamus'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'Selected Books',
-          child: Row(
-            children: [
-              Icon(Icons.list_alt_rounded,
-                  color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8.0),
-              const Text('Selected Books'),
-            ],
-          ),
-        ),
         PopupMenuItem(
           value: _sleepTimer != null && _sleepTimer!.isActive
               ? "Cancel Sleep Timer"
@@ -221,13 +152,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         PopupMenuItem<String>(
-          value: 'Account',
+          value: 'Settings',
           child: Row(
             children: [
-              Icon(Icons.account_circle_rounded,
+              Icon(Icons.settings_rounded,
                   color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8.0),
-              const Text('Account'),
+              const Text('Settings'),
             ],
           ),
         ),
@@ -318,7 +249,8 @@ class _HomePageState extends State<HomePage> {
 
     if (books.isEmpty) {
       // no books
-      return const Instruction();
+      // return const Instruction();
+      return const FirstLogin();
     } else if (isScreenWide) {
       // wide screen
       if (screen.layout == ScreenLayout.split) {
@@ -342,6 +274,102 @@ class _HomePageState extends State<HomePage> {
     return const Library();
   }
 
+  //
+  // Floating Action Buttton
+  //
+  FloatingActionButton _buildFloatingActionButton() {
+    final iconColor = Theme.of(context).colorScheme.tertiary;
+    return FloatingActionButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // LibriVox
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          const BookSitePage(url: urlLibriVoxSearchByAuthor),
+                    ));
+                  },
+                  icon: CartaBook.getIconBySource(
+                    CartaSource.librivox,
+                    color: iconColor,
+                  ),
+                  label: const Text('LibriVox'),
+                ),
+                // Internet Archive
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          const BookSitePage(url: urlInternetArchiveAudio),
+                    ));
+                  },
+                  icon: CartaBook.getIconBySource(
+                    CartaSource.archive,
+                    color: iconColor,
+                  ),
+                  label: const Text('Internet Archive'),
+                ),
+                // Legamus
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          const BookSitePage(url: urlLegamusAllRecordings),
+                    ));
+                  },
+                  icon: CartaBook.getIconBySource(
+                    CartaSource.legamus,
+                    color: iconColor,
+                  ),
+                  label: const Text('Legamus'),
+                ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CatalogPage(),
+                    ));
+                  },
+                  icon: Icon(
+                    Icons.list_alt_rounded,
+                    color: iconColor,
+                  ),
+                  label: const Text('Carta Selected Books'),
+                ),
+                // TextButton.icon(
+                //   onPressed: () {
+                //     Navigator.pop(context);
+                //     Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (context) => const NextCloudNavigator(),
+                //     ));
+                //   },
+                //   icon: Icon(
+                //     Icons.cloud_download_rounded,
+                //     color: iconColor,
+                //   ),
+                //   label: const Text('WebDAV Storage'),
+                // ),
+              ],
+            ),
+          ),
+        );
+      },
+      backgroundColor:
+          Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.8),
+      child: const Icon(Icons.add),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final handler = context.read<CartaAudioHandler>();
@@ -361,6 +389,10 @@ class _HomePageState extends State<HomePage> {
       // https://github.com/flutter/flutter/issues/50314#issuecomment-1264861424
       // bottomSheet: _buildBottomSheet(player),
       bottomNavigationBar: _buildBottomSheet(handler),
+      floatingActionButton: _buildFloatingActionButton(),
+      floatingActionButtonLocation: isScreenWide
+          ? FloatingActionButtonLocation.startFloat
+          : FloatingActionButtonLocation.centerFloat,
     );
   }
 }

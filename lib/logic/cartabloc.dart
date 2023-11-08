@@ -258,9 +258,7 @@ class CartaBloc extends ChangeNotifier {
   //
   //  Book Server
   //
-  List<CartaServer> get servers {
-    return _servers;
-  }
+  List<CartaServer> get servers => _servers;
 
   Future refreshBookServers() async {
     _servers = await _db.getBookServers();
