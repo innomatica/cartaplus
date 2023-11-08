@@ -1,10 +1,8 @@
 // urls for app
-const urlPrivacyPolicy =
-    'https://innomatica.github.io/cartaplus/privacy/';
-const urlDisclaimer =
-    'https://innomatica.github.io/cartaplus/disclaimer/';
-const urlInstruction =
-    'https://innomatica.github.io/cartaplus/manual/';
+const urlSourceRepo = 'https://github.com/innomatica/cartaplus';
+const urlPrivacyPolicy = 'https://innomatica.github.io/cartaplus/privacy/';
+const urlDisclaimer = 'https://innomatica.github.io/cartaplus/disclaimer/';
+const urlInstruction = 'https://innomatica.github.io/cartaplus/manual/';
 const urlAppIconSource =
     'https://www.flaticon.com/premium-icon/open-book_1940795';
 const urlStoreImageSource = 'https://unsplash.com/@florenciaviadana';

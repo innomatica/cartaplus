@@ -15,3 +15,8 @@ necessay files from this repo. The process goes like this roughly.
 * Add [the app to the firebase](https://firebase.google.com/docs/flutter/setup?platform=ios)
 * Initialize [firebase functions](https://firebase.google.com/docs/functions/get-started?gen=2nd#initialize-your-project)
 * Deploy [the cloud functions](https://firebase.google.com/docs/functions/get-started?gen=2nd#deploy-functions-to-a-production-environment)
+
+## TODO
+
+- Redesign Instruction page
+- Replace hamburger menu with FAB
