@@ -1,11 +1,10 @@
-import 'package:cartaplus/model/cartaserver.dart';
-import 'package:cartaplus/screens/cloud/ncsettings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../logic/authprovider.dart';
 import '../../logic/cartabloc.dart';
 import '../../shared/flutter_icons.dart';
+import '../cloud/webdav_settings.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,6 +15,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late AuthProvider _auth;
+  final ExpansionTileController controller = ExpansionTileController();
   // String? _email;
   // String? _password;
   // bool _obscurePassword = true;
@@ -150,17 +150,8 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  void _editWebDavServer({CartaServer? server}) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text('lllll'),
-      ),
-    );
-  }
-
   Widget _buildBody() {
-    final logic = context.read<CartaBloc>();
+    final logic = context.watch<CartaBloc>();
     final servers = logic.servers;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -186,23 +177,19 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () => _accountCancelDialog(),
           ),
           // WebDav Servers
-          ListTile(
-            title: const Text('WebDav Servers'),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final server in servers)
-                  TextButton(
-                    onPressed: () => _editWebDavServer(server: server),
-                    child: Text(server.title),
-                  ),
-                TextButton(
-                  onPressed: () => _editWebDavServer(),
-                  child: const Text('Add a new server'),
-                ),
-              ],
+          for (final server in servers)
+            ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              title: Text(server.title),
+              children: [WebDavSettings(server: server)],
             ),
-          )
+          const ExpansionTile(
+            tilePadding: EdgeInsets.symmetric(horizontal: 16.0),
+            childrenPadding: EdgeInsets.symmetric(horizontal: 16.0),
+            title: Text('Add a new WebDav server'),
+            children: [WebDavSettings()],
+          ),
         ],
       ),
     );

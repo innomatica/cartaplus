@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cartaplus/screens/cloud/webdav_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -279,6 +280,8 @@ class _HomePageState extends State<HomePage> {
   //
   FloatingActionButton _buildFloatingActionButton() {
     final iconColor = Theme.of(context).colorScheme.tertiary;
+    final logic = context.watch<CartaBloc>();
+
     return FloatingActionButton(
       onPressed: () {
         showDialog(
@@ -346,19 +349,20 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: const Text('Carta Selected Books'),
                 ),
-                // TextButton.icon(
-                //   onPressed: () {
-                //     Navigator.pop(context);
-                //     Navigator.of(context).push(MaterialPageRoute(
-                //       builder: (context) => const NextCloudNavigator(),
-                //     ));
-                //   },
-                //   icon: Icon(
-                //     Icons.cloud_download_rounded,
-                //     color: iconColor,
-                //   ),
-                //   label: const Text('WebDAV Storage'),
-                // ),
+                for (final server in logic.servers)
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => WebDavNavigator(server: server),
+                      ));
+                    },
+                    icon: Icon(
+                      Icons.cloud_download_rounded,
+                      color: iconColor,
+                    ),
+                    label: Text(server.title),
+                  ),
               ],
             ),
           ),

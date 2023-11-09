@@ -8,7 +8,7 @@ import '../../enc_dec.dart';
 import '../../model/cartabook.dart';
 import '../../model/cartasection.dart';
 import '../../model/cartaserver.dart';
-import '../../model/nextcloud.dart';
+import '../../model/webdav.dart';
 import '../../service/nextcloud.dart';
 import '../../shared/helpers.dart';
 
@@ -54,7 +54,8 @@ class _NextCloudNavigatorState extends State<NextCloudNavigator> {
     String author = path.elementAt(1);
     String? imageUri;
     // nextcloud specific
-    String urlPrefix = '$host/remote.php/dav/files/$user/$currentDir';
+    // String urlPrefix = '$host/remote.php/dav/files/$user/$currentDir';
+    String urlPrefix = host;
 
     for (final file in files) {
       final fileName = file.href.split('/').last;
@@ -153,7 +154,7 @@ class _NextCloudNavigatorState extends State<NextCloudNavigator> {
     // debugPrint('currentDir: $currentDir');
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 96,
+        leadingWidth: 110,
         leading: Row(
           children: [
             IconButton(

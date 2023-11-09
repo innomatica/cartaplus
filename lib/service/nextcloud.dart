@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 
-import '../model/nextcloud.dart';
+import '../model/webdav.dart';
 
 class NextCloudApiService {
   static Future<List<NextCloudResource>?> davPropfind(

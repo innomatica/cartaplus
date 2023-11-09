@@ -24,6 +24,21 @@ class WebDavResource {
     this.lastModified,
     this.resourceType,
   });
+
+  @override
+  String toString() {
+    return {
+      'href': href,
+      'creationDate': creationDate?.toLocal(),
+      'displayName': displayName,
+      'contentLanguage': contentLanguage,
+      'contentLength': contentLength,
+      'contentType': contentType,
+      'etag': etag,
+      'lastModified': lastModified?.toLocal(),
+      'resourceType': resourceType,
+    }.toString();
+  }
 }
 
 class NextCloudResource extends WebDavResource {

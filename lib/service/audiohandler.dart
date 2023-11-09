@@ -204,7 +204,7 @@ class CartaAudioHandler extends BaseAudioHandler
   }
 
   Future<void> playAudioBook(CartaBook book, {int sectionIdx = 0}) async {
-    log('handler.playAudioBook');
+    log('handler.playAudioBook.book: $book');
     if (isCurrentSection(bookId: book.bookId, sectionIdx: sectionIdx)) {
       // same book, same section => toogle playing
       if (_player.playing) {

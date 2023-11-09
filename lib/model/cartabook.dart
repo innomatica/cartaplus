@@ -188,8 +188,8 @@ class CartaBook {
     return toSqlite().toString();
   }
 
-  List<IndexedAudioSource> getAudioSource({int initIndex = 0}) {
-    final sectionData = <IndexedAudioSource>[];
+  List<UriAudioSource> getAudioSource({int initIndex = 0}) {
+    final sectionData = <UriAudioSource>[];
 
     if (sections != null && sections!.isNotEmpty) {
       final bookDir = getBookDirectory();
@@ -225,23 +225,26 @@ class CartaBook {
             // debugPrint('file source: ${file.path}');
           } else {
             // otherwise data from url
-            // audioData.add(LockCachingAudioSource(uri, tag: tag));
-            sectionData.add(ProgressiveAudioSource(
+            // sectionData.add(LockCachingAudioSource(
+            // sectionData.add(ProgressiveAudioSource(
+            sectionData.add(AudioSource.uri(
               Uri.parse(section.uri),
               headers: headers,
               tag: tag,
             ));
-            // debugPrint('url headers: ${headers.toString()}');
-            // debugPrint('url source: ${section.uri}');
+            debugPrint('url headers: ${headers.toString()}');
+            debugPrint('url source: ${section.uri}');
           }
           // debugPrint('adding: ${section.title}');
         }
       }
     }
+    // debugPrint('getAudioSource.return: $sectionData');
     return sectionData;
   }
 
   Map<String, String>? getAuthHeaders() {
+    // debugPrint('getAuthHeaders: $info');
     if (info.containsKey('authentication') &&
         info['authentication'] == 'basic' &&
         info.containsKey('username') &&
@@ -250,7 +253,7 @@ class CartaBook {
           base64Encode(utf8.encode('${info["username"]}:${info["password"]}'));
       return {
         HttpHeaders.authorizationHeader: 'Basic $credential',
-        // 'content-type': 'text/xml',
+        // 'content-type': 'audio/mpeg',
       };
     }
     return null;
