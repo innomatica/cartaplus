@@ -26,7 +26,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
   late final String user;
   late final String pass;
 
-  String currentDir = '';
+  String currentPath = '/';
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
     host = widget.server.url;
     user = widget.server.settings?['username'] ?? '';
     pass = widget.server.settings?['password'] ?? '';
-    currentDir = widget.server.settings?['directory'] ?? '';
+    currentPath = '/${widget.server.settings?['directory']}';
   }
 
   //
@@ -45,7 +45,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
     final sections = <CartaSection>[];
     int index = 0;
 
-    final path = currentDir.split('/').reversed;
+    final path = currentPath.split('/').reversed;
     if (path.length < 2) {
       return null;
     }
@@ -53,7 +53,8 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
     String bookTitle = path.elementAt(0);
     String author = path.elementAt(1);
     String? imageUri;
-    String urlPrefix = '$host/$currentDir';
+    String urlPrefix = '$host$currentPath';
+    // debugPrint('_parseFiles.urlPrefix: $urlPrefix');
 
     for (final file in files) {
       final fileName = file.href.split('/').last;
@@ -153,6 +154,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
       leadingWidth: 110,
       leading: Row(
         children: [
+          // << button
           IconButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -160,14 +162,17 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
             icon: Icon(Icons.keyboard_double_arrow_left_rounded,
                 size: 36, color: Theme.of(context).colorScheme.primary),
           ),
+          // < button
           IconButton(
             onPressed: () {
-              if (currentDir == '') {
+              if (currentPath == '/') {
                 Navigator.of(context).pop();
               } else {
-                final parts = currentDir.split('/');
+                final parts = currentPath.split('/');
+                debugPrint('< button.parts: $parts');
                 parts.removeLast();
-                currentDir = parts.join('/');
+                currentPath = parts.join('/');
+                debugPrint('< button.currentDir: $currentPath');
                 setState(() {});
               }
             },
@@ -180,10 +185,10 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.server.title),
-          currentDir == ''
+          currentPath == '/'
               ? const SizedBox(width: 0, height: 0)
               : Text(
-                  currentDir,
+                  currentPath,
                   style: TextStyle(
                     fontSize: 12.0,
                     color: Theme.of(context).colorScheme.tertiary,
@@ -196,7 +201,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
 
   Widget _buildBody() {
     return FutureBuilder<List<WebDavResource>?>(
-      future: WebDavService.davPropfind(host, user, pass, currentDir),
+      future: WebDavService.davPropfind(host, user, pass, currentPath),
       builder: ((context, snapshot) {
         bool foundAudioFiles = false;
         if (snapshot.connectionState == ConnectionState.done) {
@@ -219,7 +224,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
                         WebDavResourceType.collection;
                     // current directory artifact specfic to Nextcloud
                     final curDirItem =
-                        isDir && (files[index].href == currentDir);
+                        isDir && (files[index].href == currentPath);
                     foundAudioFiles = foundAudioFiles ||
                         files[index].contentType?.primaryType == 'audio';
                     // debugPrint('foundAudioFiles: $foundAudioFiles');
@@ -244,7 +249,9 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
                             onTap: isDir
                                 ? () {
                                     // set the new directory
-                                    currentDir = files[index].href;
+                                    currentPath = files[index].href;
+                                    debugPrint(
+                                        'ontab.currentPath:$currentPath');
                                     setState(() {});
                                   }
                                 : null,
@@ -262,7 +269,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
                           label: const Text('Add to my bookshelf'),
                           onPressed: () {
                             final book = _parseFiles(files);
-                            debugPrint('book: $book');
+                            debugPrint('book: ${book.toString()}');
                             if (book != null) {
                               showDialog(
                                 context: context,
@@ -332,7 +339,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    // debugPrint('currentDir: $currentDir');
+    debugPrint('build.currentPath: $currentPath');
     return Scaffold(
       appBar: _buildAppBar(),
       body: _buildBody(),

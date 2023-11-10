@@ -135,20 +135,21 @@ class _WebDavSettingsState extends State<WebDavSettings> {
                     final username = _userController.text;
                     final password = _pswController.text;
                     final dir = _dirController.text;
-                    // final dir =
-                    //     _dirController.text.replaceAll(RegExp(r'^/|/$'), '');
                     if (widget.server == null) {
                       final server = CartaServer(
                           serverId: getIdFromUrl(url),
                           type: ServerType.nextcloud,
                           title: title,
-                          url: url,
+                          // get rid of trailing slash
+                          url: url.replaceAll(RegExp(r'/$'), ''),
                           settings: {
                             'authentication': 'basic',
                             'username': username,
                             'password': password,
-                            'directory': dir,
+                            // get rid of reading and trailing slash
+                            'directory': dir.replaceAll(RegExp(r'^/|/$'), ''),
                           });
+                      // debugPrint('server: ${server.toString()}');
                       _bloc.addBookServer(server);
                     } else {
                       widget.server!.title = title;

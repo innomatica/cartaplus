@@ -82,46 +82,56 @@ class CartaBloc extends ChangeNotifier {
   Future<bool> addAudioBook(CartaBook book) async {
     if (auth.getUid() == null) {
       debugPrint('invalid user');
-      return false;
+    } else {
+      try {
+        // add book to database
+        FirebaseFirestore.instance
+            .collection('users')
+            // .doc(user!.uid)
+            .doc(auth.getUid())
+            .collection('books')
+            .doc(book.bookId)
+            .set(book.toFirestore());
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
-
-    // download cover image: no longer necessary
-    // await book.downloadCoverImage();
-
-    // add book to database
-    FirebaseFirestore.instance
-        .collection('users')
-        // .doc(user!.uid)
-        .doc(auth.getUid())
-        .collection('books')
-        .doc(book.bookId)
-        .set(book.toFirestore());
-    return true;
+    return false;
   }
 
   Future<CartaBook?> getAudioBookByBookId(String bookId) async {
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        // .doc(user?.uid)
-        .doc(auth.getUid())
-        .collection('books')
-        .doc(bookId)
-        .get();
-    return CartaBook.fromFirestore(doc);
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          // .doc(user?.uid)
+          .doc(auth.getUid())
+          .collection('books')
+          .doc(bookId)
+          .get();
+      return CartaBook.fromFirestore(doc);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return null;
   }
 
   Future deleteAudioBook(CartaBook book) async {
-    // remove database entry: do not omit await
-    await FirebaseFirestore.instance
-        .collection('users')
-        // .doc(user?.uid)
-        .doc(auth.getUid())
-        .collection('books')
-        .doc(book.bookId)
-        .delete();
+    try {
+      // remove database entry: do not omit await
+      await FirebaseFirestore.instance
+          .collection('users')
+          // .doc(user?.uid)
+          .doc(auth.getUid())
+          .collection('books')
+          .doc(book.bookId)
+          .delete();
 
-    // remove stored data regardless of book.source
-    await book.deleteBookDirectory();
+      // remove stored data regardless of book.source
+      await book.deleteBookDirectory();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   // update fields of the book
@@ -130,13 +140,17 @@ class CartaBloc extends ChangeNotifier {
   // field and the database
   //
   Future updateBookData(String bookId, Map<String, Object?> data) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        // .doc(user?.uid)
-        .doc(auth.getUid())
-        .collection('books')
-        .doc(bookId)
-        .update(data);
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          // .doc(user?.uid)
+          .doc(auth.getUid())
+          .collection('books')
+          .doc(bookId)
+          .update(data);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   //

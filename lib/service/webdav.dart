@@ -16,11 +16,13 @@ class WebDavService {
     String libDir,
   ) async {
     // remove leading and trailing slash
-    libDir = libDir.replaceAll(RegExp(r'^/|/$'), '');
+    // libDir = libDir.replaceAll(RegExp(r'^/|/$'), '');
     final resources = <WebDavResource>[];
     // target url
-    final url = '$host/$libDir';
-    log('davPropfind.url:$url');
+    // final url = '$host/$libDir';
+    // apache2 webdav redirection
+    final url = '$host/$libDir/';
+    log('davPropfind.url.user.pass:$url, $user, $pass');
 
     final client = http.Client();
     final request = http.Request('PROPFIND', Uri.parse(url));
@@ -50,6 +52,8 @@ class WebDavService {
     // accept only with status codes 200 and 207
     if (res.statusCode != 200 && res.statusCode != 207) {
       log('statusCode: ${res.statusCode}');
+      // log('res: $res');
+      // log('body: $body');
       return null;
     }
     // decode XML
@@ -90,7 +94,8 @@ class WebDavService {
                       try {
                         creationDate = HttpDate.parse(subSubItem.innerText);
                       } catch (e) {
-                        log(subSubItem.innerText);
+                        // FIXME: HttpException: Invalid HTTP date 2023-10-09T01:27:53Z
+                        // log(subSubItem.innerText);
                         log(e.toString());
                       }
                       break;
@@ -131,7 +136,7 @@ class WebDavService {
         if (href != null && href.isNotEmpty) {
           resources.add(
             WebDavResource(
-              // remove trailing slash (NextCloud artifact)
+              // remove trailing slash
               href: href.replaceAll(RegExp(r'/$'), ''),
               creationDate: creationDate,
               displayName: displayName,
@@ -143,6 +148,7 @@ class WebDavService {
               resourceType: resourceType,
             ),
           );
+          // log('resource: ${resources[resources.length - 1].toString()}');
         }
       }
     } catch (e) {
