@@ -4,7 +4,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../logic/authprovider.dart';
+import '../../logic/cartaauth.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({super.key});
@@ -14,12 +14,12 @@ class VerifyEmailPage extends StatefulWidget {
 }
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
-  late AuthProvider _auth;
+  late CartaAuth _auth;
   late final Timer _timer;
 
   @override
   void initState() {
-    _auth = context.read<AuthProvider>();
+    _auth = context.read<CartaAuth>();
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer t) async {
       debugPrint('reload user: $t');
       //

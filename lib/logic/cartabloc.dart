@@ -13,11 +13,11 @@ import '../model/cartaserver.dart';
 import '../repo/sqlite.dart';
 import '../service/webpage.dart';
 import '../shared/settings.dart';
-import 'authprovider.dart';
+import 'cartaauth.dart';
 
 class CartaBloc extends ChangeNotifier {
   // User? user;
-  AuthProvider auth;
+  CartaAuth auth;
   late final StreamSubscription<QuerySnapshot> _booksListener;
   late final StreamSubscription<DocumentSnapshot> _plusSubListener;
 

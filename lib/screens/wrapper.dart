@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // import '../logic/cartabloc.dart';
-import '../logic/authprovider.dart';
+import '../logic/cartaauth.dart';
 import 'auth/signin.dart';
 import 'auth/verifyemail.dart';
 import 'home/home.dart';
@@ -13,7 +13,7 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().user;
+    final user = context.watch<CartaAuth>().user;
 
     return user != null
         ? user.emailVerified

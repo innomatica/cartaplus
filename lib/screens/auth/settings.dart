@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../logic/authprovider.dart';
+import '../../logic/cartaauth.dart';
 import '../../logic/cartabloc.dart';
 import '../../shared/flutter_icons.dart';
 import '../cloud/webdav_settings.dart';
@@ -14,7 +14,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  late AuthProvider _auth;
+  late CartaAuth _auth;
   final ExpansionTileController controller = ExpansionTileController();
   // String? _email;
   // String? _password;
@@ -22,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    _auth = context.read<AuthProvider>();
+    _auth = context.read<CartaAuth>();
     super.initState();
   }
 

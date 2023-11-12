@@ -232,8 +232,8 @@ class CartaBook {
               headers: headers,
               tag: tag,
             ));
-            debugPrint('url headers: ${headers.toString()}');
-            debugPrint('url source: ${section.uri}');
+            // debugPrint('url headers: ${headers.toString()}');
+            // debugPrint('url source: ${section.uri}');
           }
           // debugPrint('adding: ${section.title}');
         }

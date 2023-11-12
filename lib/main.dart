@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'logic/cartabloc.dart';
-import 'logic/authprovider.dart';
+import 'logic/cartaauth.dart';
 import 'logic/screenconfig.dart';
 import 'screens/catalog/catalog.dart';
 import 'screens/wrapper.dart';
@@ -61,9 +61,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider<ScreenConfig>(
             create: (context) => ScreenConfig()),
-        ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+        ChangeNotifierProvider<CartaAuth>(create: (_) => CartaAuth()),
         ChangeNotifierProvider<CartaBloc>(
-          create: (context) => CartaBloc(auth: context.read<AuthProvider>()),
+          create: (context) => CartaBloc(auth: context.read<CartaAuth>()),
         ),
         Provider<CartaAudioHandler>(
             create: (context) {

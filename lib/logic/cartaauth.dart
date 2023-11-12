@@ -10,13 +10,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 // that it won't happen in the real devices:
 // https://github.com/firebase/flutterfire/issues/725#issuecomment-657030135
 
-class AuthProvider extends ChangeNotifier {
+class CartaAuth extends ChangeNotifier {
   User? _user;
   bool loggedIn = false;
   late final StreamSubscription userAuthSub;
   String lastError = '';
 
-  AuthProvider() {
+  CartaAuth() {
     userAuthSub = FirebaseAuth.instance.authStateChanges().listen((newUser) {
       _user = newUser;
       notifyListeners();
