@@ -156,6 +156,7 @@ class WebDavService {
       log(e.toString());
       return null;
     }
+    resources.sort(((a, b) => (a.href).compareTo(b.href)));
     return resources;
   }
 
