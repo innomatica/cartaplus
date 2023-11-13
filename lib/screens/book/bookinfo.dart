@@ -55,6 +55,7 @@ class _BookInfoViewState extends State<BookInfoView> {
         ),
       );
     } else {
+      debugPrint('localDataState: ${localDataState['state']}');
       switch (localDataState['state']) {
         case LocalDataState.none:
           // DOWNLOAD
@@ -64,17 +65,26 @@ class _BookInfoViewState extends State<BookInfoView> {
           );
         case LocalDataState.audioOnly:
         case LocalDataState.audioAndCoverImage:
+        case LocalDataState.partial:
           // DELETE MEDIA DATA
           return TextButton(
             onPressed: () async {
               await bloc.deleteMediaData(widget.book);
             },
-            child: const Text('Delete local media data'),
+            child: const Text('Delete local media'),
           );
         default:
-          return Container();
+          return const SizedBox(width: 0, height: 0);
       }
     }
+  }
+
+  Widget _buildCacheButton() {
+    final cached = widget.book.info['cached'] == true;
+    return TextButton(
+      onPressed: () {},
+      child: Text(cached ? 'Cache enabled' : 'Cache disabled'),
+    );
   }
 
   //
@@ -128,6 +138,7 @@ class _BookInfoViewState extends State<BookInfoView> {
     );
     final author =
         widget.book.authors == null ? '' : widget.book.authors!.split(',')[0];
+    final categories = widget.book.info['categories'] ?? defaultCategory;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(8.0),
@@ -176,11 +187,19 @@ class _BookInfoViewState extends State<BookInfoView> {
             },
           ),
 
+          // categories
+          ListTile(
+            title: Text('Categories', style: titleStyle),
+            subtitle: Text(categories),
+            onTap: () {},
+          ),
+
           // source
           ListTile(
             title: Text('Source', style: titleStyle),
             subtitle: Text(widget.book.source.name),
-            trailing: enableDownload ? _buildDownloadButton() : null,
+            // trailing: enableDownload ? _buildDownloadButton() : null,
+            trailing: _buildCacheButton(),
             onTap: () async {
               try {
                 await launchUrl(Uri.parse(widget.book.info['siteUrl']));

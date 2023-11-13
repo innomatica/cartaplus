@@ -92,7 +92,7 @@ class WebPageParser {
           bookId: getIdFromUrl(url),
           title: attrs['title'],
           source: CartaSource.archive,
-          info: {'siteUrl': url},
+          info: {'siteUrl': url, 'categories': defaultCategory},
           authors: 'Internet Archive',
           description: attrs['description'],
           imageUri: attrs['imageUrl'],
@@ -226,6 +226,7 @@ class WebPageParser {
             'urlRss': urlRss,
             'siteUrl': url,
             'textUrl': textUrl,
+            'categories': defaultCategory,
           },
         );
       }
@@ -299,9 +300,7 @@ class WebPageParser {
         duration: duration,
         source: CartaSource.legamus,
         sections: sections,
-        info: {
-          'siteUrl': url,
-        },
+        info: {'siteUrl': url, 'categories': defaultCategory},
       );
     }
     // debugPrint('book:$book');

@@ -78,7 +78,7 @@ class CartaAudioHandler extends BaseAudioHandler
         log('PlayerException code: ${e.code}');
         log('PlayerException message: ${e.message}');
       } else {
-        log('PlaybackEvent error occurred: $e');
+        log('PlaybackEvent error: $e');
       }
       // do not stop here
     });

@@ -134,10 +134,24 @@ class WebDavService {
           }
         }
         if (href != null && href.isNotEmpty) {
+          // remove ending slash
+          href = href.replaceAll(RegExp(r'/$'), '');
+          // in case webdav does not understand certain audio mime-types
+          if (contentType == null) {
+            if (href.endsWith('aac')) {
+              contentType = ContentType('audio', 'x-aac');
+            } else if (href.endsWith('flac')) {
+              contentType = ContentType('audio', 'x-flac');
+            } else if (href.endsWith('m4a')) {
+              contentType = ContentType('audio', 'x-m4a');
+            } else if (href.endsWith('m4b')) {
+              contentType = ContentType('audio', 'x-m4b');
+            }
+          }
           resources.add(
             WebDavResource(
               // remove trailing slash
-              href: href.replaceAll(RegExp(r'/$'), ''),
+              href: href,
               creationDate: creationDate,
               displayName: displayName,
               contentLanguage: contentLanguage,

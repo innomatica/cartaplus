@@ -30,6 +30,8 @@ enum LocalDataState {
   audioAndCoverImage,
 }
 
+const defaultCategory = 'Audio Book';
+
 class CartaBook {
   String bookId;
   String title;
@@ -83,6 +85,7 @@ class CartaBook {
         'siteUrl': result['url_librivox'].trim(),
         'urlOther': result['url_other'],
         'copyrightYear': result['copyright_year'],
+        'categories': defaultCategory,
       },
     );
   }
@@ -190,7 +193,7 @@ class CartaBook {
 
   List<UriAudioSource> getAudioSource({int initIndex = 0}) {
     final sectionData = <UriAudioSource>[];
-
+    // book must have valid sections
     if (sections != null && sections!.isNotEmpty) {
       final bookDir = getBookDirectory();
       final headers = getAuthHeaders();
@@ -224,9 +227,8 @@ class CartaBook {
             ));
             // debugPrint('file source: ${file.path}');
           } else {
-            // otherwise data from url
+            // TODO: test required
             // sectionData.add(LockCachingAudioSource(
-            // sectionData.add(ProgressiveAudioSource(
             sectionData.add(AudioSource.uri(
               Uri.parse(section.uri),
               headers: headers,
@@ -271,7 +273,7 @@ class CartaBook {
           localSections++;
         }
       }
-
+      // check the number of local sections
       if (localSections == sections?.length) {
         // all sections are in the local
         final file = File('${bookDir.path}/${imageUri?.split('/').last}');
@@ -361,7 +363,7 @@ class CartaBook {
   // DO NOT make this function ASYNC
   ImageProvider getCoverImage() {
     final bookDir = getBookDirectory();
-
+    // validate imageUri
     if (imageUri != null) {
       try {
         final file = File('${bookDir.path}/${imageUri!.split('/').last}');
@@ -389,7 +391,6 @@ class CartaBook {
     if (!await bookDir.exists()) {
       await bookDir.create();
     }
-
     // download image
     if (imageUri != null) {
       final res = await http.get(

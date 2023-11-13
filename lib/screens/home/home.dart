@@ -357,8 +357,8 @@ class _HomePageState extends State<HomePage> {
                         builder: (context) => WebDavNavigator(server: server),
                       ));
                     },
-                    icon: Icon(
-                      Icons.cloud_download_rounded,
+                    icon: CartaBook.getIconBySource(
+                      CartaSource.cloud,
                       color: iconColor,
                     ),
                     label: Text(server.title),
