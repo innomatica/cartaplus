@@ -15,6 +15,9 @@ import '../service/webpage.dart';
 import '../shared/settings.dart';
 import 'cartaauth.dart';
 
+const sortOptions = ['title', 'authors'];
+const filterOptions = ['all', 'librivox', 'archive', 'cloud'];
+
 class CartaBloc extends ChangeNotifier {
   // User? user;
   CartaAuth auth;
@@ -22,6 +25,9 @@ class CartaBloc extends ChangeNotifier {
   late final StreamSubscription<DocumentSnapshot> _plusSubListener;
 
   bool hasPlus = false;
+  int sortIndex = 0;
+  int filterIndex = 0;
+
   final _books = <CartaBook>[];
   final _cancelRequests = <String>{};
   final _isDownloading = <String>{};
@@ -46,6 +52,7 @@ class CartaBloc extends ChangeNotifier {
       for (final doc in event.docs) {
         _books.add(CartaBook.fromFirestore(doc));
       }
+      _sortBooks();
       notifyListeners();
     });
 
@@ -76,7 +83,21 @@ class CartaBloc extends ChangeNotifier {
   }
 
   List<CartaBook> get books {
-    return _books;
+    final filterOption = filterOptions[filterIndex];
+    // debugPrint('filterOption: $filterOption');
+    if (filterOption == 'librivox') {
+      return _books
+          .where((b) =>
+              b.source == CartaSource.librivox ||
+              b.source == CartaSource.legamus)
+          .toList();
+    } else if (filterOption == 'archive') {
+      return _books.where((b) => b.source == CartaSource.archive).toList();
+    } else if (filterOption == 'cloud') {
+      return _books.where((b) => b.source == CartaSource.cloud).toList();
+    } else {
+      return _books;
+    }
   }
 
   Future<bool> addAudioBook(CartaBook book) async {
@@ -139,7 +160,7 @@ class CartaBloc extends ChangeNotifier {
   // it is the callers responsibility to do the conversion depending on the
   // field and the database
   //
-  Future updateBookData(String bookId, Map<String, Object?> data) async {
+  Future<bool> updateBookData(String bookId, Map<String, Object?> data) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -148,9 +169,11 @@ class CartaBloc extends ChangeNotifier {
           .collection('books')
           .doc(bookId)
           .update(data);
+      return true;
     } catch (e) {
       debugPrint(e.toString());
     }
+    return false;
   }
 
   //
@@ -238,6 +261,27 @@ class CartaBloc extends ChangeNotifier {
     }
     // debugPrint('deleteMediaData.notifyListeners');
     notifyListeners();
+  }
+
+  void rotateFilterBy() {
+    filterIndex = (filterIndex + 1) % filterOptions.length;
+    notifyListeners();
+  }
+
+  void rotateSortBy() {
+    sortIndex = (sortIndex + 1) % sortOptions.length;
+    _sortBooks();
+    notifyListeners();
+  }
+
+  _sortBooks() {
+    final sortOption = sortOptions[sortIndex];
+    // debugPrint('sortOption: $sortOption');
+    if (sortOption == 'title') {
+      _books.sort((a, b) => a.title.compareTo(b.title));
+    } else if (sortOption == 'authors') {
+      _books.sort((a, b) => (a.authors ?? '').compareTo(b.authors ?? ''));
+    }
   }
 
   //

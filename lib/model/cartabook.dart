@@ -85,7 +85,6 @@ class CartaBook {
         'siteUrl': result['url_librivox'].trim(),
         'urlOther': result['url_other'],
         'copyrightYear': result['copyright_year'],
-        'categories': defaultCategory,
       },
     );
   }
@@ -191,8 +190,8 @@ class CartaBook {
     return toSqlite().toString();
   }
 
-  List<UriAudioSource> getAudioSource({int initIndex = 0}) {
-    final sectionData = <UriAudioSource>[];
+  List<IndexedAudioSource> getAudioSource({int initIndex = 0}) {
+    final sectionData = <IndexedAudioSource>[];
     // book must have valid sections
     if (sections != null && sections!.isNotEmpty) {
       final bookDir = getBookDirectory();
@@ -227,13 +226,23 @@ class CartaBook {
             ));
             // debugPrint('file source: ${file.path}');
           } else {
-            // TODO: test required
-            // sectionData.add(LockCachingAudioSource(
-            sectionData.add(AudioSource.uri(
-              Uri.parse(section.uri),
-              headers: headers,
-              tag: tag,
-            ));
+            // NOTE: this is experimental
+            // https://pub.dev/packages/just_audio#working-with-caches
+            if (info['cached'] == true) {
+              // debugPrint('${section.title}:LockCachingAudiSource');
+              sectionData.add(LockCachingAudioSource(
+                Uri.parse(section.uri),
+                headers: headers,
+                tag: tag,
+              ));
+            } else {
+              // debugPrint('${section.title}:UriAudioSource');
+              sectionData.add(AudioSource.uri(
+                Uri.parse(section.uri),
+                headers: headers,
+                tag: tag,
+              ));
+            }
             // debugPrint('url headers: ${headers.toString()}');
             // debugPrint('url source: ${section.uri}');
           }

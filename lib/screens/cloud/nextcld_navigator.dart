@@ -276,6 +276,7 @@ class _NextCloudNavigatorState extends State<NextCloudNavigator> {
                                       const SnackBar(
                                         content:
                                             Text('Book is in the bookshelf'),
+                                        duration: Duration(seconds: 1),
                                       ),
                                     );
                                   }

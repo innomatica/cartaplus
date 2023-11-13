@@ -9,7 +9,7 @@ import 'package:xml/xml.dart';
 import '../model/webdav.dart';
 
 class WebDavService {
-  static Future<List<WebDavResource>?> davPropfind(
+  static Future<List<WebDavResource>?> propFind(
     String host,
     String user,
     String pass,
@@ -22,7 +22,7 @@ class WebDavService {
     // final url = '$host/$libDir';
     // apache2 webdav redirection
     final url = '$host/$libDir/';
-    log('davPropfind.url.user.pass:$url, $user, $pass');
+    // log('davPropfind.url.user.pass:$url, $user, $pass');
 
     final client = http.Client();
     final request = http.Request('PROPFIND', Uri.parse(url));
@@ -94,9 +94,10 @@ class WebDavService {
                       try {
                         creationDate = HttpDate.parse(subSubItem.innerText);
                       } catch (e) {
-                        // FIXME: HttpException: Invalid HTTP date 2023-10-09T01:27:53Z
                         // log(subSubItem.innerText);
-                        log(e.toString());
+                        // probably ISO format(2023-10-09T01:27:53Z)
+                        // log(e.toString());
+                        creationDate = DateTime.tryParse(subSubItem.innerText);
                       }
                       break;
                     case 'displayname':
@@ -120,7 +121,12 @@ class WebDavService {
                       etag = subSubItem.innerText.replaceAll('"', '');
                       break;
                     case 'getlastmodified':
-                      lastModified = HttpDate.parse(subSubItem.innerText);
+                      try {
+                        lastModified = HttpDate.parse(subSubItem.innerText);
+                      } catch (e) {
+                        // log(e.toString());
+                        creationDate = DateTime.tryParse(subSubItem.innerText);
+                      }
                       break;
                     case 'resourcetype':
                       if (subSubItem.innerXml.contains('collection')) {
@@ -134,7 +140,7 @@ class WebDavService {
           }
         }
         if (href != null && href.isNotEmpty) {
-          // remove ending slash
+          // remove trailing slash
           href = href.replaceAll(RegExp(r'/$'), '');
           // in case webdav does not understand certain audio mime-types
           if (contentType == null) {

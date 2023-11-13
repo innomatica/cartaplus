@@ -37,10 +37,10 @@ class _HomePageState extends State<HomePage> {
   //
   // Screen Layout Select
   //
-  Widget? _buildScreenSelect() {
+  Widget _buildScreenSelect() {
     final screen = context.read<ScreenConfig>();
     Icon btnIcon;
-    const btnSize = 32.0;
+    const btnSize = 28.0;
     final btnColor = Theme.of(context).colorScheme.tertiary;
     void Function() handler;
 
@@ -58,13 +58,65 @@ class _HomePageState extends State<HomePage> {
       // instead back to split from book view
       handler = () => screen.setLayout(ScreenLayout.split);
     }
+    return IconButton(icon: btnIcon, onPressed: handler);
+  }
 
+  //
+  // Sort Button
+  //
+  Widget _buildSortButton() {
+    final logic = context.read<CartaBloc>();
+    const btnSize = 26.0;
+    final btnColor = Theme.of(context).colorScheme.tertiary;
+    return IconButton(
+      icon: Icon(Icons.sort_by_alpha_rounded, size: btnSize, color: btnColor),
+      onPressed: () => logic.rotateSortBy(),
+    );
+  }
+
+  //
+  // Filter Button
+  //
+  Widget _buildFilterButton() {
+    final logic = context.read<CartaBloc>();
+    const btnSize = 26.0;
+    final btnColor = Theme.of(context).colorScheme.tertiary;
+    return IconButton(
+      icon: Icon(Icons.filter_list_rounded, size: btnSize, color: btnColor),
+      onPressed: () => logic.rotateFilterBy(),
+    );
+  }
+
+  Widget? _buildTitleWidgets() {
     return isScreenWide
-        ? IconButton(
-            icon: btnIcon,
-            onPressed: handler,
-          )
-        : null;
+        ? Row(children: [
+            _buildScreenSelect(),
+            const SizedBox(width: 16.0),
+            const Text(appName),
+            const SizedBox(width: 16.0),
+            _buildSortButton(),
+            _buildFilterButton(),
+          ])
+        : const Text(appName);
+  }
+
+  List<Widget> _buildActionWidgets() {
+    final handler = context.read<CartaAudioHandler>();
+    return isScreenWide
+        ? [
+            _sleepTimer != null && _sleepTimer!.isActive
+                ? _buildSleepTimerButton()
+                : const SizedBox(width: 0, height: 0),
+            _buildMenuButton(handler),
+          ]
+        : [
+            _buildSortButton(),
+            _buildFilterButton(),
+            _sleepTimer != null && _sleepTimer!.isActive
+                ? _buildSleepTimerButton()
+                : const SizedBox(width: 0, height: 0),
+            _buildMenuButton(handler),
+          ];
   }
 
   //
@@ -181,7 +233,8 @@ class _HomePageState extends State<HomePage> {
   //
   // Scaffold.Bottomsheet
   //
-  Widget? _buildBottomSheet(CartaAudioHandler handler) {
+  Widget? _buildBottomSheet() {
+    final handler = context.read<CartaAudioHandler>();
     // needs to redraw whenever the playing state changes
     return StreamBuilder<AudioProcessingState>(
       stream: handler.playbackState.map((e) => e.processingState).distinct(),
@@ -376,23 +429,15 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final handler = context.read<CartaAudioHandler>();
-
     return Scaffold(
       appBar: AppBar(
-        leading: _buildScreenSelect(),
-        title: const Text(appName),
-        actions: [
-          _sleepTimer != null && _sleepTimer!.isActive
-              ? _buildSleepTimerButton()
-              : Container(),
-          _buildMenuButton(handler),
-        ],
+        title: _buildTitleWidgets(),
+        actions: _buildActionWidgets(),
       ),
       body: _buildBody(),
       // https://github.com/flutter/flutter/issues/50314#issuecomment-1264861424
       // bottomSheet: _buildBottomSheet(player),
-      bottomNavigationBar: _buildBottomSheet(handler),
+      bottomNavigationBar: _buildBottomSheet(),
       floatingActionButton: _buildFloatingActionButton(),
       floatingActionButtonLocation: isScreenWide
           ? FloatingActionButtonLocation.startFloat

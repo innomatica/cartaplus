@@ -295,7 +295,7 @@ class FirstLogin extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 200,
+            width: 160,
             child: Image(image: AssetImage(defaultAlbumImage)),
           ),
           Text(

@@ -201,7 +201,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
 
   Widget _buildBody() {
     return FutureBuilder<List<WebDavResource>?>(
-      future: WebDavService.davPropfind(host, user, pass, currentPath),
+      future: WebDavService.propFind(host, user, pass, currentPath),
       builder: ((context, snapshot) {
         bool foundAudioFiles = false;
         if (snapshot.connectionState == ConnectionState.done) {
@@ -250,8 +250,8 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
                                 ? () {
                                     // set the new directory
                                     currentPath = files[index].href;
-                                    debugPrint(
-                                        'ontab.currentPath:$currentPath');
+                                    // debugPrint(
+                                    //     'ontab.currentPath:$currentPath');
                                     setState(() {});
                                   }
                                 : null,
@@ -280,6 +280,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text('Book is in the bookshelf'),
+                                      duration: Duration(seconds: 1),
                                     ),
                                   );
                                 }
@@ -339,7 +340,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('build.currentPath: $currentPath');
+    // debugPrint('build.currentPath: $currentPath');
     return Scaffold(
       appBar: _buildAppBar(),
       body: _buildBody(),
