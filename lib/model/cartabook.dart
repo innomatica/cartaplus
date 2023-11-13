@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:mime/mime.dart';
 
+// import '../repo/sqlite.dart';
+import '../enc_dec.dart';
 import '../shared/constants.dart';
 import '../shared/helpers.dart';
 import 'cartacard.dart';
@@ -260,8 +262,11 @@ class CartaBook {
         info['authentication'] == 'basic' &&
         info.containsKey('username') &&
         info.containsKey('password')) {
-      final credential =
-          base64Encode(utf8.encode('${info["username"]}:${info["password"]}'));
+      // debugPrint('info: $info');
+      final username = decrypt(info['username']);
+      final password = decrypt(info['password']);
+      // debugPrint('username: $username, password: $password');
+      final credential = base64Encode(utf8.encode('$username:$password'));
       return {
         HttpHeaders.authorizationHeader: 'Basic $credential',
         // 'content-type': 'audio/mpeg',

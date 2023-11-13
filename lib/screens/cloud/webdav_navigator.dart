@@ -44,18 +44,16 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
   CartaBook? _parseFiles(List<WebDavResource> files) {
     final sections = <CartaSection>[];
     int index = 0;
-
     final path = currentPath.split('/').reversed;
+    // path must be like /author(performer)/title(album)
     if (path.length < 2) {
       return null;
     }
-
     String bookTitle = path.elementAt(0);
     String author = path.elementAt(1);
     String? imageUri;
     String urlPrefix = '$host$currentPath';
     // debugPrint('_parseFiles.urlPrefix: $urlPrefix');
-
     for (final file in files) {
       final fileName = file.href.split('/').last;
       if (file.contentType?.primaryType == 'audio') {
@@ -77,7 +75,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
         imageUri = Uri.encodeFull('$urlPrefix/$fileName');
       }
     }
-
+    // book must have section data
     if (sections.isEmpty) {
       return null;
     } else {
@@ -91,8 +89,8 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
         info: {
           'source': widget.server.title,
           'authentication': 'basic',
-          'username': user,
-          'password': pass,
+          'username': encrypt(user),
+          'password': encrypt(pass),
         },
       );
     }
@@ -105,7 +103,6 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
     String? title = book.title;
     String? author = book.authors;
     String? description;
-
     return AlertDialog(
       content: Column(
         mainAxisSize: MainAxisSize.min,

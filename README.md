@@ -92,7 +92,3 @@ rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
 ## TODO
 
 - Fix privilege issue when sign out
-- Cover image returns 401 when called from player (NetworkImage)
-  - use locally downloaded image
-- Do not release public version until WebDav credential source is updated
-- use just audio source instead of direct download

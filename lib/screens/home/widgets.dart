@@ -146,7 +146,6 @@ class BookTitle extends StatelessWidget {
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               overflow: TextOverflow.ellipsis,
-              maxLines: 1,
             );
           default:
             return Column(
@@ -157,6 +156,7 @@ class BookTitle extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w500,
+                    overflow: TextOverflow.ellipsis,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
@@ -166,6 +166,7 @@ class BookTitle extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15.0,
                     fontWeight: FontWeight.w400,
+                    overflow: TextOverflow.ellipsis,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),

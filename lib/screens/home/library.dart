@@ -82,6 +82,7 @@ class _LibraryState extends State<Library> {
           color: Theme.of(context).colorScheme.tertiary,
           fontSize: 16.0,
           fontWeight: FontWeight.w700,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
       backgroundColor: Theme.of(context).dialogBackgroundColor.withOpacity(0.9),

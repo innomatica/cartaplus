@@ -240,7 +240,11 @@ class CartaAudioHandler extends BaseAudioHandler
           // https://pub.dev/packages/just_audio#working-with-caches
           // Better to clear cache regardless of the source type
           // if (audioSource[0] is LockCachingAudioSource) {
-          await AudioPlayer.clearAssetCache();
+          try {
+            await AudioPlayer.clearAssetCache();
+          } catch (e) {
+            log(e.toString());
+          }
           // }
           await _player.setAudioSource(
             ConcatenatingAudioSource(children: audioSource),
