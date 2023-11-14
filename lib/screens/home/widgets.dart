@@ -213,25 +213,29 @@ class FirstLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logic = context.read<CartaBloc>();
+    final logic = context.watch<CartaBloc>();
     final filter = logic.currentFilter;
     const textStyle = TextStyle(fontWeight: FontWeight.w600);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          filter == 'all'
-              ? const Text('Welcome to Carta', style: textStyle)
-              : Text('No $filter books', style: textStyle),
-          const SizedBox(height: 16.0),
-          const SizedBox(
-            width: 140,
-            child: Image(image: AssetImage(defaultAlbumImage)),
-          ),
-          const SizedBox(height: 16.0),
-          const Text('Add books and start listening', style: textStyle),
-        ],
+        children: filter == 'all'
+            ? [
+                const Text('Welcome to $appName', style: textStyle),
+                const SizedBox(height: 16.0),
+                const SizedBox(
+                  width: 80,
+                  child: Image(image: AssetImage(defaultAlbumImage)),
+                ),
+                const SizedBox(height: 16.0),
+                const Text('Add books and start listening', style: textStyle),
+              ]
+            : [
+                Icon(logic.filterIcon, size: 80, color: Colors.blueGrey),
+                const SizedBox(height: 16.0),
+                Text('Add $filter books', style: textStyle),
+              ],
       ),
     );
   }

@@ -65,10 +65,12 @@ class _HomePageState extends State<HomePage> {
   //
   Widget _buildSortButton() {
     final logic = context.read<CartaBloc>();
-    const btnSize = 26.0;
-    final btnColor = Theme.of(context).colorScheme.tertiary;
     return IconButton(
-      icon: Icon(Icons.sort_by_alpha_rounded, size: btnSize, color: btnColor),
+      icon: Icon(
+        logic.sortIcon,
+        size: 30.0,
+        color: Theme.of(context).colorScheme.tertiary,
+      ),
       onPressed: () => logic.rotateSortBy(),
     );
   }
@@ -78,10 +80,12 @@ class _HomePageState extends State<HomePage> {
   //
   Widget _buildFilterButton() {
     final logic = context.read<CartaBloc>();
-    const btnSize = 26.0;
-    final btnColor = Theme.of(context).colorScheme.tertiary;
     return IconButton(
-      icon: Icon(Icons.filter_list_rounded, size: btnSize, color: btnColor),
+      icon: Icon(
+        logic.filterIcon,
+        size: 26.0,
+        color: Theme.of(context).colorScheme.tertiary,
+      ),
       onPressed: () => logic.rotateFilterBy(),
     );
   }
@@ -299,7 +303,6 @@ class _HomePageState extends State<HomePage> {
     final screen = context.watch<ScreenConfig>();
     // debugPrint('home.body screen.layout: ${screen.layout}');
     // debugPrint('home.body isWide: ${screen.isWide}');
-
     if (books.isEmpty) {
       // no books
       return const FirstLogin();

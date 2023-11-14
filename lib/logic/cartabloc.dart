@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 
@@ -17,6 +17,13 @@ import 'cartaauth.dart';
 
 const sortOptions = ['title', 'authors'];
 const filterOptions = ['all', 'librivox', 'archive', 'cloud'];
+const sortIcons = [Icons.album_rounded, Icons.account_circle_rounded];
+const filterIcons = [
+  Icons.import_contacts_rounded,
+  Icons.local_library_rounded,
+  Icons.account_balance_rounded,
+  Icons.cloud_rounded,
+];
 
 class CartaBloc extends ChangeNotifier {
   // User? user;
@@ -46,7 +53,10 @@ class CartaBloc extends ChangeNotifier {
     super.dispose();
   }
 
+  String get currentSort => sortOptions[sortIndex];
   String get currentFilter => filterOptions[filterIndex];
+  IconData get sortIcon => sortIcons[sortIndex];
+  IconData get filterIcon => filterIcons[filterIndex];
 
   List<CartaBook> get books {
     final filterOption = filterOptions[filterIndex];
