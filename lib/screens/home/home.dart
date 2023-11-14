@@ -18,7 +18,6 @@ import '../auth/settings.dart';
 import '../book/bookpanel.dart';
 import '../catalog/catalog.dart';
 import '../booksite/booksite.dart';
-// import 'instruction.dart';
 import 'library.dart';
 import 'player.dart';
 import 'widgets.dart';
@@ -303,7 +302,6 @@ class _HomePageState extends State<HomePage> {
 
     if (books.isEmpty) {
       // no books
-      // return const Instruction();
       return const FirstLogin();
     } else if (isScreenWide) {
       // wide screen

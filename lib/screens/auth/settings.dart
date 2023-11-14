@@ -15,10 +15,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late CartaAuth _auth;
-  final ExpansionTileController controller = ExpansionTileController();
-  // String? _email;
-  // String? _password;
-  // bool _obscurePassword = true;
 
   @override
   void initState() {

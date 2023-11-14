@@ -28,6 +28,7 @@ class _AboutPageState extends State<AboutPage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
+        shrinkWrap: true,
         children: [
           // Version
           ListTile(
@@ -63,11 +64,7 @@ class _AboutPageState extends State<AboutPage> {
                   builder: (context) {
                     return SimpleDialog(
                       title: Center(
-                        child: Text(
-                          'Visit Play Store',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary),
-                        ),
+                        child: Text('Visit Our Store', style: titleStyle),
                       ),
                       children: [
                         Padding(
