@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../service/audiohandler.dart';
+import '../../logic/cartabloc.dart';
 import '../../model/cartabook.dart';
+import '../../service/audiohandler.dart';
 import '../../shared/constants.dart';
 import '../../shared/settings.dart';
 
@@ -292,20 +294,24 @@ class FirstLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final logic = context.read<CartaBloc>();
+    final filter = logic.currentFilter;
+    const textStyle = TextStyle(fontWeight: FontWeight.w600);
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          filter == 'all'
+              ? const Text('Welcome to Carta', style: textStyle)
+              : Text('No $filter books', style: textStyle),
+          const SizedBox(height: 16.0),
+          const SizedBox(
             width: 140,
             child: Image(image: AssetImage(defaultAlbumImage)),
           ),
-          SizedBox(height: 16.0),
-          Text(
-            'Add books and start listening',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
+          const SizedBox(height: 16.0),
+          const Text('Add books and start listening', style: textStyle),
         ],
       ),
     );

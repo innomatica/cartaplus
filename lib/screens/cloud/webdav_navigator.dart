@@ -266,7 +266,7 @@ class _WebDavNavigatorState extends State<WebDavNavigator> {
                           label: const Text('Add to my bookshelf'),
                           onPressed: () {
                             final book = _parseFiles(files);
-                            debugPrint('book: ${book.toString()}');
+                            // debugPrint('book: ${book.toString()}');
                             if (book != null) {
                               showDialog(
                                 context: context,

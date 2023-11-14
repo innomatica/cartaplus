@@ -46,6 +46,8 @@ class CartaBloc extends ChangeNotifier {
     super.dispose();
   }
 
+  String get currentFilter => filterOptions[filterIndex];
+
   List<CartaBook> get books {
     final filterOption = filterOptions[filterIndex];
     // debugPrint('filterOption: $filterOption');
