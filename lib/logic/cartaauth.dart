@@ -13,12 +13,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 class CartaAuth extends ChangeNotifier {
   User? _user;
   bool loggedIn = false;
-  late final StreamSubscription userAuthSub;
+  late final StreamSubscription _authListener;
   String lastError = '';
 
   CartaAuth() {
-    userAuthSub = FirebaseAuth.instance.authStateChanges().listen((newUser) {
+    _authListener = FirebaseAuth.instance.authStateChanges().listen((newUser) {
       _user = newUser;
+      // debugPrint('auth listener notified user change: $newUser');
       notifyListeners();
     }, onError: (e) {
       debugPrint('authStateChanges Error: $e');
@@ -29,7 +30,7 @@ class CartaAuth extends ChangeNotifier {
 
   @override
   void dispose() {
-    userAuthSub.cancel();
+    _authListener.cancel();
     super.dispose();
   }
 
@@ -42,8 +43,6 @@ class CartaAuth extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    // TODO: stop all stream subscription before signing out to prevent
-    // exception caused by unauthenticated operation of listening
     await FirebaseAuth.instance.signOut();
   }
 
@@ -72,75 +71,5 @@ class CartaAuth extends ChangeNotifier {
       lastError = e.toString();
     }
     return null;
-  }
-
-  Future<UserCredential?> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      return FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'invalid-email':
-        case 'user-disabled':
-        case 'user-not-found':
-        case 'wrong-password':
-        default:
-          lastError = e.code;
-      }
-    } catch (e) {
-      lastError = e.toString();
-    }
-    return null;
-  }
-
-  Future<bool> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user?.sendEmailVerification();
-      return true;
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'email-already-in-use':
-        case 'weak-password':
-        case 'invalid-email':
-        case 'user-disabled':
-        case 'user-not-found':
-        case 'wrong-password':
-        default:
-          lastError = e.code;
-      }
-    } catch (e) {
-      lastError = e.hashCode.toString();
-    }
-    return false;
-  }
-
-  Future<bool> sendPasswordResetEmail({required String email}) async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      return true;
-    } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'invalid-email':
-        case 'missing-android-pkg-name':
-        case 'missing-continue-uri':
-        case 'missing-ios-bundle-id':
-        case 'invalid-continue-uri':
-        case 'unauthorized-continue-uri':
-        case 'user-not-found':
-        default:
-          lastError = e.code;
-      }
-    } catch (e) {
-      lastError = e.hashCode.toString();
-    }
-    return false;
   }
 }

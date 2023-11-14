@@ -199,7 +199,9 @@ class BookCover extends StatelessWidget {
                   ? Image.file(File(tag.artUri!.toFilePath()),
                       height: size ?? 200, width: size ?? 200)
                   : Image.network(tag.artUri!.toString(),
-                      height: size ?? 200, width: size ?? 200)
+                      headers: tag.artHeaders,
+                      height: size ?? 200,
+                      width: size ?? 200)
               : Container(),
         );
       },
@@ -296,11 +298,12 @@ class FirstLogin extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 160,
+            width: 140,
             child: Image(image: AssetImage(defaultAlbumImage)),
           ),
+          SizedBox(height: 16.0),
           Text(
-            'Add New Books and Start Listening',
+            'Add books and start listening',
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
         ],

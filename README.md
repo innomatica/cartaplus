@@ -91,5 +91,3 @@ rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
 
 ## TODO
 
-- Fix privilege issue when sign out
-  - functions.purgeUserData...Deletion failed. Failed to fetch documents to delete

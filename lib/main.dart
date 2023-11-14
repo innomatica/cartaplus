@@ -1,3 +1,4 @@
+import 'package:cartaplus/screens/auth/signin.dart';
 import 'package:cartaplus/service/audiohandler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -92,21 +93,16 @@ class MyApp extends StatelessWidget {
             final uri = Uri.parse(settings.name!);
             // debugPrint('path: ${uri.path}');
             // debugPrint('params: ${uri.queryParameters}');
-
             if (uri.path == '/') {
               return MaterialPageRoute(builder: (context) => const Wrapper());
             } else if (uri.path == '/selected') {
               return MaterialPageRoute(
                 builder: (context) => const CatalogPage(),
               );
-              // } else if (uri.path == '/newbook') {
-              //   // this is for the deeplink now broken in Android 12
-              //   final bookUrl = uri.queryParameters[0];
-              //   return MaterialPageRoute(
-              //     builder: (context) => BookSitePage(
-              //       url: bookUrl,
-              //     ),
-              //   );
+            } else if (uri.path == '/login') {
+              return MaterialPageRoute(
+                builder: (context) => const SignInPage(),
+              );
             }
           }
           return MaterialPageRoute(builder: (context) => const NotFound());

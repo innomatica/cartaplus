@@ -57,9 +57,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     onPressed: () async {
                       final credential = await _auth.signInWithGoogle();
                       if (credential != null) {
-                        credential.user
-                            ?.delete()
-                            .then((_) => Navigator.of(context).pop(true));
+                        credential.user?.delete();
+                        // https://stackoverflow.com/questions/44159819/how-to-dismiss-an-alertdialog-on-a-flatbutton-click
+                        if (mounted) {
+                          Navigator.of(context, rootNavigator: true).pop(true);
+                        }
                       } else {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -75,76 +77,15 @@ class _SettingsPageState extends State<SettingsPage> {
                     label: const Text('Sign In with Google'),
                   ),
                 ),
-                //
-                // Cancel through Email Password Authentication
-                //
-                // TextField(
-                //   onChanged: (value) => _email = value,
-                //   decoration: const InputDecoration(
-                //     isDense: true,
-                //     icon: Icon(Icons.email_rounded),
-                //     label: Text('email'),
-                //   ),
-                // ),
-                // TextField(
-                //   onChanged: (value) => _password = value,
-                //   obscureText: _obscurePassword,
-                //   decoration: InputDecoration(
-                //     suffixIcon: IconButton(
-                //       icon: _obscurePassword
-                //           ? const Icon(Icons.visibility_rounded)
-                //           : const Icon(Icons.visibility_off_rounded),
-                //       onPressed: () {
-                //         _obscurePassword = !_obscurePassword;
-                //         setState(() {});
-                //       },
-                //     ),
-                //     isDense: true,
-                //     icon: const Icon(Icons.password_rounded),
-                //     label: const Text('password'),
-                //   ),
-                // ),
-                // const SizedBox(height: 22.0),
-                // SizedBox(
-                //   width: 200,
-                //   child: ElevatedButton(
-                //     onPressed: () async {
-                //       if (_email != null &&
-                //           _email!.isNotEmpty &&
-                //           _password != null &&
-                //           _password!.isNotEmpty) {
-                //         FocusManager.instance.primaryFocus?.unfocus();
-                //         final credential =
-                //             await _auth.signInWithEmailAndPassword(
-                //                 email: _email!, password: _password!);
-                //         if (credential != null) {
-                //           credential.user
-                //               ?.delete()
-                //               .then((_) => Navigator.of(context).pop(true));
-                //         } else {
-                //           if (mounted) {
-                //             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                //               content: Text(
-                //                 'Failed to delete account (${_auth.lastError})',
-                //                 style: const TextStyle(
-                //                     fontWeight: FontWeight.w600),
-                //               ),
-                //             ));
-                //           }
-                //         }
-                //       }
-                //     },
-                //     child: const Text('Sign in with email'),
-                //   ),
-                // ),
               ],
             ),
           );
         });
       },
     ).then((value) {
-      // needs to pop
+      // if account is deleted
       if (value == true) {
+        // need to get out of the settings page
         Navigator.of(context).pop();
       }
     });
@@ -162,14 +103,6 @@ class _SettingsPageState extends State<SettingsPage> {
             title: const Text('Email'),
             subtitle: Text(_auth.user?.email ?? ''),
           ),
-          // Change Password
-          // ListTile(
-          //   title: const Text('Change Password'),
-          //   subtitle: const Text('Log out then reset password'),
-          //   onTap: () {
-          //     _auth.signOut().then((_) => Navigator.of(context).pop());
-          //   },
-          // ),
           // Cancel Account
           ListTile(
             title: const Text('Cancel Account'),

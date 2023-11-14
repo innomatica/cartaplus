@@ -21,8 +21,6 @@ const filterOptions = ['all', 'librivox', 'archive', 'cloud'];
 class CartaBloc extends ChangeNotifier {
   // User? user;
   CartaAuth auth;
-  late final StreamSubscription<QuerySnapshot> _booksListener;
-  late final StreamSubscription<DocumentSnapshot> _plusSubListener;
 
   bool hasPlus = false;
   int sortIndex = 0;
@@ -39,46 +37,12 @@ class CartaBloc extends ChangeNotifier {
   CartaBloc({required this.auth}) {
     // update book server list when start
     refreshBookServers();
-
-    // listen to the books change
-    final colRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(auth.getUid())
-        .collection('books');
-    _booksListener = colRef.snapshots().listen((event) {
-      // clear existing list
-      _books.clear();
-      // fill the list with new book data
-      for (final doc in event.docs) {
-        _books.add(CartaBook.fromFirestore(doc));
-      }
-      _sortBooks();
-      notifyListeners();
-    });
-
-    // listen to the subscription change
-    final docRef =
-        FirebaseFirestore.instance.collection('users').doc(auth.getUid());
-    _plusSubListener = docRef.snapshots().listen(
-      (snapshot) {
-        if (snapshot.exists) {
-          // subscription change
-          final plusSubData = snapshot.get(productPlusSub);
-          // debugPrint('subscription data: ${data['expired']}');
-          hasPlus = plusSubData['expired'] == false ? true : false;
-          // debugPrint('hasPlus: $hasPlus');
-          notifyListeners();
-        }
-      },
-      onError: (e) => debugPrint(e.toString()),
-    );
+    refreshBooks();
   }
 
   @override
   dispose() {
     _db.close();
-    _booksListener.cancel();
-    _plusSubListener.cancel();
     super.dispose();
   }
 
@@ -106,13 +70,13 @@ class CartaBloc extends ChangeNotifier {
     } else {
       try {
         // add book to database
-        FirebaseFirestore.instance
+        await FirebaseFirestore.instance
             .collection('users')
-            // .doc(user!.uid)
             .doc(auth.getUid())
             .collection('books')
             .doc(book.bookId)
             .set(book.toFirestore());
+        refreshBooks();
         return true;
       } catch (e) {
         debugPrint(e.toString());
@@ -147,9 +111,9 @@ class CartaBloc extends ChangeNotifier {
           .collection('books')
           .doc(book.bookId)
           .delete();
-
       // remove stored data regardless of book.source
       await book.deleteBookDirectory();
+      refreshBooks();
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -169,6 +133,7 @@ class CartaBloc extends ChangeNotifier {
           .collection('books')
           .doc(bookId)
           .update(data);
+      refreshBooks();
       return true;
     } catch (e) {
       debugPrint(e.toString());
@@ -281,6 +246,25 @@ class CartaBloc extends ChangeNotifier {
       _books.sort((a, b) => a.title.compareTo(b.title));
     } else if (sortOption == 'authors') {
       _books.sort((a, b) => (a.authors ?? '').compareTo(b.authors ?? ''));
+    }
+  }
+
+  Future<void> refreshBooks() async {
+    final db = FirebaseFirestore.instance;
+    try {
+      final query = await db
+          .collection('users')
+          .doc(auth.getUid())
+          .collection('books')
+          .get();
+      _books.clear();
+      for (final doc in query.docs) {
+        _books.add(CartaBook.fromFirestore(doc));
+      }
+      _sortBooks();
+      notifyListeners();
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
