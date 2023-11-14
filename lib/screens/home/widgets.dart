@@ -3,13 +3,10 @@ import 'dart:io';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../logic/cartabloc.dart';
-import '../../model/cartabook.dart';
 import '../../service/audiohandler.dart';
 import '../../shared/constants.dart';
-import '../../shared/settings.dart';
 
 //
 // Progress Bar
