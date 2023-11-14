@@ -51,3 +51,4 @@ firestore.rules
 /android/key.properties
 /android/app/google-services.json
 /functions/assets/service-account.json
+/lib/secrets.dart

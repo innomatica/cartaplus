@@ -1,6 +1,5 @@
 import 'package:encrypt/encrypt.dart' as enc;
-
-const keyString = 'G3mm4DzB3/qqlLT07q+KRR9SX4fxfdCBwfn/XjJ5Opw=';
+import 'secrets.dart';
 
 String encrypt(String value) {
   final key = enc.Key.fromBase64(keyString);

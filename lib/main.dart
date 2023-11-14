@@ -1,5 +1,3 @@
-import 'package:cartaplus/screens/auth/signin.dart';
-import 'package:cartaplus/service/audiohandler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -14,8 +12,11 @@ import 'firebase_options.dart';
 import 'logic/cartabloc.dart';
 import 'logic/cartaauth.dart';
 import 'logic/screenconfig.dart';
+import 'screens/auth/settings.dart';
+import 'screens/auth/signin.dart';
 import 'screens/catalog/catalog.dart';
 import 'screens/wrapper.dart';
+import 'service/audiohandler.dart';
 import 'shared/apptheme.dart';
 import 'shared/helpers.dart';
 import 'shared/notfound.dart';
@@ -102,6 +103,10 @@ class MyApp extends StatelessWidget {
             } else if (uri.path == '/login') {
               return MaterialPageRoute(
                 builder: (context) => const SignInPage(),
+              );
+            } else if (uri.path == '/settings') {
+              return MaterialPageRoute(
+                builder: (context) => const SettingsPage(),
               );
             }
           }

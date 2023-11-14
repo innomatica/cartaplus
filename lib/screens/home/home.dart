@@ -389,19 +389,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: const Text('Legamus'),
                 ),
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const CatalogPage(),
-                    ));
-                  },
-                  icon: Icon(
-                    Icons.list_alt_rounded,
-                    color: iconColor,
-                  ),
-                  label: const Text('Carta Selected Books'),
-                ),
                 for (final server in logic.servers)
                   TextButton.icon(
                     onPressed: () {
@@ -416,6 +403,30 @@ class _HomePageState extends State<HomePage> {
                     ),
                     label: Text(server.title),
                   ),
+                logic.servers.isEmpty
+                    ? TextButton.icon(
+                        onPressed: () =>
+                            Navigator.of(context).popAndPushNamed('/settings'),
+                        icon: CartaBook.getIconBySource(
+                          CartaSource.cloud,
+                          color: iconColor,
+                        ),
+                        label: const Text('Register WebDAV server'),
+                      )
+                    : const SizedBox(width: 0, height: 0),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CatalogPage(),
+                    ));
+                  },
+                  icon: Icon(
+                    Icons.list_alt_rounded,
+                    color: iconColor,
+                  ),
+                  label: const Text('Carta Selected Books'),
+                ),
               ],
             ),
           ),
