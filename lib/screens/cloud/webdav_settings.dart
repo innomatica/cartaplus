@@ -130,11 +130,11 @@ class _WebDavSettingsState extends State<WebDavSettings> {
                   if (_formKey.currentState!.validate()) {
                     // dismiss screen keyboard
                     FocusManager.instance.primaryFocus?.unfocus();
-                    final title = _titleController.text;
-                    final url = _urlController.text;
-                    final username = _userController.text;
-                    final password = _pswController.text;
-                    final dir = _dirController.text;
+                    final title = _titleController.text.trim();
+                    final url = _urlController.text.trim();
+                    final username = _userController.text.trim();
+                    final password = _pswController.text.trim();
+                    final dir = _dirController.text.trim();
                     if (widget.server == null) {
                       final server = CartaServer(
                           serverId: getIdFromUrl(url),
@@ -158,7 +158,7 @@ class _WebDavSettingsState extends State<WebDavSettings> {
                         'authentication': 'basic',
                         'username': username,
                         'password': password,
-                        'directory': dir,
+                        'directory': dir.replaceAll(RegExp(r'^/|/$'), ''),
                       };
                       _bloc.updateBookServer(widget.server!);
                     }
