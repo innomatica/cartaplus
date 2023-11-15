@@ -1,10 +1,13 @@
+import 'package:cartaplus/model/cartalibrary.dart';
+import 'package:cartaplus/shared/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../logic/cartaauth.dart';
 import '../../logic/cartabloc.dart';
 import '../../shared/flutter_icons.dart';
-import '../cloud/webdav_settings.dart';
+import 'library.dart';
+import 'webdav.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -14,6 +17,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  static const tilePadding = EdgeInsets.symmetric(horizontal: 16.0);
   late CartaAuth _auth;
 
   @override
@@ -90,6 +94,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildBody() {
     final logic = context.watch<CartaBloc>();
     final servers = logic.servers;
+    final libraries = logic.libraries;
+    final myLibrary = logic.getMyLibrary();
+    debugPrint('myLibrary: ${myLibrary.toString()}');
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
@@ -105,18 +113,72 @@ class _SettingsPageState extends State<SettingsPage> {
             subtitle: const Text('Delete data and close account'),
             onTap: () => _accountCancelDialog(),
           ),
+          // Create My Library
+          myLibrary == null
+              ? ExpansionTile(
+                  tilePadding: tilePadding,
+                  childrenPadding: tilePadding,
+                  title: const Text('Create My Library'),
+                  children: [LibrarySettings(userId: _auth.uid!)],
+                )
+              : const SizedBox(width: 0, height: 0),
+          // Subscribed Libraries
+          for (final library in libraries)
+            ExpansionTile(
+              tilePadding: tilePadding,
+              childrenPadding: tilePadding,
+              title: Text(library.title),
+              children: [
+                LibrarySettings(
+                  library: library,
+                  userId: _auth.uid!,
+                )
+              ],
+            ),
+          // sign in library
+          logic.libraries.length >= maxLibrariesToJoin
+              ? const SizedBox(height: 0, width: 0)
+              : FutureBuilder<List<CartaLibrary>>(
+                  future: logic.getLibraryList(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return ExpansionTile(
+                        tilePadding: tilePadding,
+                        childrenPadding: tilePadding,
+                        title: const Text('Join Other Libraries'),
+                        children: snapshot.data!
+                            .map(
+                              (l) => CheckboxListTile(
+                                title: Text(l.title),
+                                value: l.signedUp,
+                                onChanged: (value) {
+                                  // TODO: do something
+                                },
+                              ),
+                            )
+                            .toList(),
+                      );
+                    } else {
+                      return const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }),
           // WebDav Servers
           for (final server in servers)
             ExpansionTile(
-              tilePadding: const EdgeInsets.symmetric(horizontal: 16.0),
-              childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              tilePadding: tilePadding,
+              childrenPadding: tilePadding,
               title: Text(server.title),
               children: [WebDavSettings(server: server)],
             ),
+          // add a WebDav server
           const ExpansionTile(
-            tilePadding: EdgeInsets.symmetric(horizontal: 16.0),
-            childrenPadding: EdgeInsets.symmetric(horizontal: 16.0),
-            title: Text('Add a new WebDav server'),
+            tilePadding: tilePadding,
+            childrenPadding: tilePadding,
+            title: Text('Add WebDAV Server'),
             children: [WebDavSettings()],
           ),
         ],

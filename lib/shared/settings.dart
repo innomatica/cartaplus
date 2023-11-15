@@ -3,8 +3,7 @@ const urlSourceRepo = 'https://github.com/innomatica/cartaplus';
 const urlPrivacyPolicy = 'https://innomatica.github.io/cartaplus/privacy/';
 const urlDisclaimer = 'https://innomatica.github.io/cartaplus/disclaimer/';
 const urlInstruction = 'https://innomatica.github.io/cartaplus/manual/';
-const urlAppIconSource =
-    'https://www.flaticon.com/premium-icon/open-book_1940795';
+const urlAppIconSource = 'https://www.flaticon.com/free-icon/open-book_1940795';
 const urlStoreImageSource = 'https://unsplash.com/@florenciaviadana';
 
 // selected books
@@ -37,12 +36,12 @@ double initialWindowHeight = 0;
 bool isScreenWide = false;
 
 // bottom padding
-double bottomPadding = 52.0;
+const double bottomPadding = 52.0;
+
+// account limits
+const int maxBooksToCreate = 50;
+const int maxLibrariesToJoin = 5;
+const int maxLibrariesToCreate = 1;
 
 // for testing only
 const useEmulator = false;
-
-const booksCollection = 'books';
-const productPlusSub = 'plus_subscription';
-const sourcePlayStore = 'play_store';
-const sourceAppStore = 'app_store';

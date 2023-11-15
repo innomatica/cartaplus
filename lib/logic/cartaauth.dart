@@ -19,7 +19,7 @@ class CartaAuth extends ChangeNotifier {
   CartaAuth() {
     _authListener = FirebaseAuth.instance.authStateChanges().listen((newUser) {
       _user = newUser;
-      // debugPrint('auth listener notified user change: $newUser');
+      debugPrint('auth listener notified user change: $newUser');
       notifyListeners();
     }, onError: (e) {
       debugPrint('authStateChanges Error: $e');
@@ -34,13 +34,8 @@ class CartaAuth extends ChangeNotifier {
     super.dispose();
   }
 
-  String? getUid() {
-    return _user?.uid;
-  }
-
-  bool get isAuthenticated {
-    return _user != null;
-  }
+  String? get uid => _user?.uid;
+  bool get isAuthenticated => _user != null;
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();

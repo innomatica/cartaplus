@@ -10,6 +10,7 @@ import 'package:mime/mime.dart';
 import '../model/cartabook.dart';
 import '../model/cartacard.dart';
 import '../model/cartaserver.dart';
+import '../model/cartalibrary.dart';
 import '../repo/sqlite.dart';
 import '../service/webpage.dart';
 import '../shared/settings.dart';
@@ -29,9 +30,9 @@ class CartaBloc extends ChangeNotifier {
   // User? user;
   CartaAuth auth;
 
-  bool hasPlus = false;
   int sortIndex = 0;
   int filterIndex = 0;
+  // bool _hasLibrary = false;
 
   final _books = <CartaBook>[];
   final _cancelRequests = <String>{};
@@ -39,12 +40,15 @@ class CartaBloc extends ChangeNotifier {
 
   final _db = SqliteRepo();
   // NOTE: book server data stored in the local database
-  List<CartaServer> _servers = <CartaServer>[];
+  final List<CartaServer> _servers = <CartaServer>[];
+  // community book shelf
+  final List<CartaLibrary> _libraries = <CartaLibrary>[];
 
   CartaBloc({required this.auth}) {
     // update book server list when start
     refreshBookServers();
     refreshBooks();
+    refreshLibraries();
   }
 
   @override
@@ -77,14 +81,16 @@ class CartaBloc extends ChangeNotifier {
   }
 
   Future<bool> addAudioBook(CartaBook book) async {
-    if (auth.getUid() == null) {
+    if (auth.uid == null) {
       debugPrint('invalid user');
+    } else if (_books.length > maxBooksToCreate) {
+      debugPrint('exceed limit');
     } else {
       try {
         // add book to database
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(auth.getUid())
+            .doc(auth.uid)
             .collection('books')
             .doc(book.bookId)
             .set(book.toFirestore());
@@ -102,7 +108,7 @@ class CartaBloc extends ChangeNotifier {
       final doc = await FirebaseFirestore.instance
           .collection('users')
           // .doc(user?.uid)
-          .doc(auth.getUid())
+          .doc(auth.uid)
           .collection('books')
           .doc(bookId)
           .get();
@@ -119,7 +125,7 @@ class CartaBloc extends ChangeNotifier {
       await FirebaseFirestore.instance
           .collection('users')
           // .doc(user?.uid)
-          .doc(auth.getUid())
+          .doc(auth.uid)
           .collection('books')
           .doc(book.bookId)
           .delete();
@@ -140,8 +146,7 @@ class CartaBloc extends ChangeNotifier {
     try {
       await FirebaseFirestore.instance
           .collection('users')
-          // .doc(user?.uid)
-          .doc(auth.getUid())
+          .doc(auth.uid)
           .collection('books')
           .doc(bookId)
           .update(data);
@@ -264,11 +269,8 @@ class CartaBloc extends ChangeNotifier {
   Future<void> refreshBooks() async {
     final db = FirebaseFirestore.instance;
     try {
-      final query = await db
-          .collection('users')
-          .doc(auth.getUid())
-          .collection('books')
-          .get();
+      final query =
+          await db.collection('users').doc(auth.uid).collection('books').get();
       _books.clear();
       for (final doc in query.docs) {
         _books.add(CartaBook.fromFirestore(doc));
@@ -315,7 +317,8 @@ class CartaBloc extends ChangeNotifier {
   List<CartaServer> get servers => _servers;
 
   Future refreshBookServers() async {
-    _servers = await _db.getBookServers();
+    _servers.clear();
+    _servers.addAll(await _db.getBookServers());
     notifyListeners();
   }
 
@@ -332,5 +335,106 @@ class CartaBloc extends ChangeNotifier {
   Future deleteBookServer(CartaServer server) async {
     await _db.deleteBookServer(server);
     refreshBookServers();
+  }
+
+  //
+  // Library
+  //
+  // bool get hasLibrary => _hasLibrary;
+  List<CartaLibrary> get libraries => _libraries;
+
+  Future refreshLibraries() async {
+    final db = FirebaseFirestore.instance;
+    final userId = auth.uid;
+    try {
+      final query =
+          db.collection('libraries').where('owner', isEqualTo: userId);
+      debugPrint('refreshLibraries: $query');
+      final snapshot = await query.get();
+      _libraries.clear();
+      for (final doc in snapshot.docs) {
+        _libraries.add(CartaLibrary.fromFirestore(doc.id, doc.data()));
+      }
+      // _hasLibrary = _libraries.any((l) => l.ownerId == userId);
+      notifyListeners();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<List<CartaLibrary>> getLibraryList() async {
+    final libraries = <CartaLibrary>[];
+    final db = FirebaseFirestore.instance;
+    final snapshot = await db.collection('libraries').get();
+    final userId = auth.uid;
+
+    for (final doc in snapshot.docs) {
+      debugPrint('getLibraryList.doc: ${doc.data()}');
+      // TODO: check this
+      final library = CartaLibrary.fromFirestore(doc.id, doc.data());
+      if (library.owner != userId) {
+        if (_libraries.any((l) => l.id == library.id)) {
+          library.signedUp = true;
+        } else {
+          library.signedUp = false;
+        }
+        libraries.add(library);
+      }
+    }
+    return libraries;
+  }
+
+  Future<void> createLibrary(CartaLibrary library) async {
+    // how many libraries owns already
+    String? userId = auth.uid;
+    if (userId is String) {
+      int count = 0;
+      for (final library in _libraries) {
+        if (library.owner == userId) {
+          count = count + 1;
+        }
+      }
+      if (count < maxLibrariesToCreate) {
+        final db = FirebaseFirestore.instance;
+        await db
+            .collection('libraries')
+            .add(library.toFirestore()..remove('id'));
+        refreshLibraries();
+      }
+    }
+  }
+
+  Future<void> updateLibrary(CartaLibrary library) async {
+    // debugPrint('updateLibrary: ${library.toString()}');
+    String? userId = auth.uid;
+    if (userId is String && library.id != null) {
+      final db = FirebaseFirestore.instance;
+      await db
+          .collection('libraries')
+          .doc(library.id)
+          .set(library.toFirestore()..remove('id'));
+      refreshLibraries();
+    }
+  }
+
+  Future<void> deleteLibrary(String? libraryId) async {
+    if (libraryId is String) {
+      final db = FirebaseFirestore.instance;
+      await db.collection('libraries').doc(libraryId).delete();
+      refreshLibraries();
+    }
+  }
+
+  Future signupLibrary(String? libraryId, {String? credential}) async {}
+  Future cancelLibrary(String? libraryId, {String? credential}) async {}
+
+  Future<List<CartaLibrary>> listLibraries() async {
+    final libraries = <CartaLibrary>[];
+    return libraries;
+  }
+
+  CartaLibrary? getMyLibrary() {
+    final index = _libraries.indexWhere((l) => l.owner == auth.uid);
+    return index == -1 ? null : _libraries[index];
   }
 }

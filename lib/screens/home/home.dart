@@ -14,7 +14,7 @@ import '../../shared/booksites.dart';
 import '../../shared/constants.dart';
 import '../../shared/settings.dart';
 import '../about/about.dart';
-import '../auth/settings.dart';
+import '../settings/settings.dart';
 import '../book/bookpanel.dart';
 import '../catalog/catalog.dart';
 import '../booksite/booksite.dart';
@@ -390,6 +390,20 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: const Text('Legamus'),
                 ),
+                // Libraries
+                for (final library in logic.libraries)
+                  TextButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.group_rounded, color: iconColor),
+                    label: Text(library.title),
+                  ),
+                logic.libraries.isEmpty
+                    ? TextButton.icon(
+                        onPressed: () =>
+                            Navigator.of(context).popAndPushNamed('/settings'),
+                        icon: Icon(Icons.group_rounded, color: iconColor),
+                        label: const Text('Community Library'))
+                    : const SizedBox(width: 0, height: 0),
                 for (final server in logic.servers)
                   TextButton.icon(
                     onPressed: () {
@@ -408,10 +422,8 @@ class _HomePageState extends State<HomePage> {
                     ? TextButton.icon(
                         onPressed: () =>
                             Navigator.of(context).popAndPushNamed('/settings'),
-                        icon: CartaBook.getIconBySource(
-                          CartaSource.cloud,
-                          color: iconColor,
-                        ),
+                        icon: CartaBook.getIconBySource(CartaSource.cloud,
+                            color: iconColor),
                         label: const Text('Register WebDAV server'),
                       )
                     : const SizedBox(width: 0, height: 0),
@@ -423,10 +435,10 @@ class _HomePageState extends State<HomePage> {
                     ));
                   },
                   icon: Icon(
-                    Icons.list_alt_rounded,
+                    Icons.favorite_border_rounded,
                     color: iconColor,
                   ),
-                  label: const Text('Carta Selected Books'),
+                  label: const Text('Carta Favorite Books'),
                 ),
               ],
             ),
