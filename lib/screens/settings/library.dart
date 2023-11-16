@@ -131,6 +131,7 @@ class _LibrarySettingsState extends State<LibrarySettings> {
               ],
             ),
           )
+        // NOTE: You will never reach here under current design
         : Column(
             children: [
               Text(
@@ -139,7 +140,7 @@ class _LibrarySettingsState extends State<LibrarySettings> {
                 overflow: TextOverflow.ellipsis,
               ),
               TextButton(
-                onPressed: () => _bloc.cancelLibrary(_library.id),
+                onPressed: () => _bloc.cancelLibrary(_library),
                 child: const Text('Cancel Subscription'),
               ),
             ],

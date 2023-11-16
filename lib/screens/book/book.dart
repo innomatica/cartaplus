@@ -5,6 +5,7 @@ import '../../logic/screenconfig.dart';
 import '../../model/cartabook.dart';
 import 'bookpanel.dart';
 import 'deletebook.dart';
+import 'publishbook.dart';
 import 'sharebook.dart';
 
 //
@@ -23,8 +24,14 @@ class _BookPageState extends State<BookPage> {
     final book = context.read<ScreenConfig>().book;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book Details'),
+        title: const Text('Details'),
         actions: [
+          // PUBLISH
+          book != null &&
+                  (book.source == CartaSource.archive ||
+                      book.source == CartaSource.librivox)
+              ? PublishBook(book: book)
+              : const SizedBox(width: 0, height: 0),
           // SHARE
           book != null &&
                   (book.source == CartaSource.archive ||

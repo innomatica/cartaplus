@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
@@ -112,26 +111,47 @@ class CartaBook {
     );
   }
 
-  factory CartaBook.fromFirestore(DocumentSnapshot data) {
+  factory CartaBook.fromFirestore(Map<String, dynamic>? data) {
     return CartaBook(
-      bookId: data['bookId'],
-      title: data['title'],
-      authors: data['authors'] is List
-          ? data['authors'][0]['lastName'] // old model
-          : data['authors'], // new model
-      description: data['description'],
-      language: data['language'],
-      imageUri: data['imageUri'],
-      duration: fromDurationString(data['duration']),
-      lastSection: data['lastSection'],
-      lastPosition: fromDurationString(data['lastPosition']),
-      source: CartaSource.values[data['source']],
-      info: data['info'],
-      sections: data['sections']
+      bookId: data?['bookId'],
+      title: data?['title'],
+      authors: data?['authors'] is List
+          ? data?['authors'][0]?['lastName'] // old model
+          : data?['authors'], // new model
+      description: data?['description'],
+      language: data?['language'],
+      imageUri: data?['imageUri'],
+      duration: fromDurationString(data?['duration']),
+      lastSection: data?['lastSection'],
+      lastPosition: fromDurationString(data?['lastPosition']),
+      source: CartaSource.values[data?['source']],
+      info: data?['info'],
+      sections: data?['sections']
           ?.map<CartaSection>((e) => CartaSection.fromDatabase(e))
           .toList(),
     );
   }
+
+  // factory CartaBook.fromMap(Map<String, dynamic> data) {
+  //   return CartaBook(
+  //     bookId: data['bookId'],
+  //     title: data['title'],
+  //     authors: data['authors'] is List
+  //         ? data['authors'][0]['lastName'] // old model
+  //         : data['authors'], // new model
+  //     description: data['description'],
+  //     language: data['language'],
+  //     imageUri: data['imageUri'],
+  //     duration: fromDurationString(data['duration']),
+  //     lastSection: data['lastSection'],
+  //     lastPosition: fromDurationString(data['lastPosition']),
+  //     source: CartaSource.values[data['source']],
+  //     info: data['info'],
+  //     sections: data['sections']
+  //         ?.map<CartaSection>((e) => CartaSection.fromDatabase(e))
+  //         .toList(),
+  //   );
+  // }
 
   factory CartaBook.fromCartaCard(CartaCard card) {
     if (card.data['bookId'] == null || card.data['title'] == null) {

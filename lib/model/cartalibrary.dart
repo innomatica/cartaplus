@@ -1,11 +1,13 @@
+import 'cartabook.dart';
+
 class CartaLibrary {
   String? id;
   String title;
   String owner;
   List<String> members;
+  List<CartaBook> books;
   String? description;
   bool isPublic;
-  int count;
   String? credential;
   Map<String, dynamic> info;
   bool? signedUp;
@@ -15,9 +17,9 @@ class CartaLibrary {
     required this.title,
     required this.owner,
     required this.members,
+    required this.books,
     this.description,
     required this.isPublic,
-    required this.count,
     this.credential,
     required this.info,
   });
@@ -28,9 +30,11 @@ class CartaLibrary {
       title: data['title'],
       owner: data['owner'],
       members: (data['members'] as List).map((e) => e as String).toList(),
+      books: (data['books'] as List)
+          .map((b) => CartaBook.fromFirestore(b))
+          .toList(),
       description: data['description'],
       isPublic: data['isPublic'],
-      count: data['count'],
       credential: data['credential'],
       info: data['info'],
     );
@@ -41,9 +45,9 @@ class CartaLibrary {
       title: '',
       owner: userId,
       members: <String>[],
+      books: <CartaBook>[],
       description: '',
       isPublic: true,
-      count: 0,
       info: {},
     );
   }
@@ -54,9 +58,9 @@ class CartaLibrary {
       'title': title,
       'owner': owner,
       'members': members,
+      'books': books.map((b) => b.toFirestore()).toList(),
       'description': description,
       'isPublic': isPublic,
-      'count': count,
       'credential': credential,
       'info': info,
     };
@@ -69,9 +73,9 @@ class CartaLibrary {
       'title': title,
       'owner': owner,
       'members': members,
+      'books': books.map((b) => b.toString()).toList().toString(),
       'description': description,
       'isPublic': isPublic,
-      'count': count,
       'credential': credential,
       'info': info,
       'signedUp': signedUp,

@@ -1,5 +1,4 @@
 import 'package:cartaplus/model/cartalibrary.dart';
-import 'package:cartaplus/shared/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -90,78 +89,86 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildBody() {
     final logic = context.watch<CartaBloc>();
     final servers = logic.servers;
-    final libraries = logic.libraries;
     final myLibrary = logic.getMyLibrary();
-    debugPrint('myLibrary: ${myLibrary.toString()}');
+    final titleStyle = TextStyle(color: Theme.of(context).colorScheme.tertiary);
+    // debugPrint('myLibrary: ${myLibrary.toString()}');
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
         children: [
+          //
           // Email
+          //
           ListTile(
-            title: const Text('Email'),
+            title: Text('Email', style: titleStyle),
             subtitle: Text(_auth.user?.email ?? ''),
           ),
+          //
           // Cancel Account
+          //
           ListTile(
-            title: const Text('Cancel Account'),
+            title: Text('Cancel Account', style: titleStyle),
             subtitle: const Text('Delete data and close account'),
             onTap: () => _accountCancelDialog(),
           ),
-          // Create My Library
-          myLibrary == null
+          //
+          // My Library
+          //
+          myLibrary != null
               ? ExpansionTile(
                   tilePadding: tilePadding,
                   childrenPadding: tilePadding,
-                  title: const Text('Create My Library'),
+                  title: Text('My Library', style: titleStyle),
+                  children: [
+                    LibrarySettings(
+                      library: myLibrary,
+                      userId: _auth.uid!,
+                    )
+                  ],
+                )
+              : ExpansionTile(
+                  tilePadding: tilePadding,
+                  childrenPadding: tilePadding,
+                  title: Text('Create My Library', style: titleStyle),
                   children: [LibrarySettings(userId: _auth.uid!)],
-                )
-              : const SizedBox(width: 0, height: 0),
-          // Subscribed Libraries
-          for (final library in libraries)
-            ExpansionTile(
-              tilePadding: tilePadding,
-              childrenPadding: tilePadding,
-              title: Text(library.title),
-              children: [
-                LibrarySettings(
-                  library: library,
-                  userId: _auth.uid!,
-                )
-              ],
-            ),
-          // sign in library
-          logic.libraries.length >= maxLibrariesToJoin
-              ? const SizedBox(height: 0, width: 0)
-              : FutureBuilder<List<CartaLibrary>>(
-                  future: logic.getLibraryList(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return ExpansionTile(
-                        tilePadding: tilePadding,
-                        childrenPadding: tilePadding,
-                        title: const Text('Join Other Libraries'),
-                        children: snapshot.data!
-                            .map(
-                              (l) => CheckboxListTile(
-                                title: Text(l.title),
-                                value: l.signedUp,
-                                onChanged: (value) {
-                                  // TODO: do something
-                                },
-                              ),
-                            )
-                            .toList(),
-                      );
-                    } else {
-                      return const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  }),
+                ),
+          //
+          // Public Libraries
+          //
+          FutureBuilder<List<CartaLibrary>>(
+              future: logic.getPublicLibraries(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ExpansionTile(
+                    tilePadding: tilePadding,
+                    childrenPadding: tilePadding,
+                    title: Text('Public Libraries', style: titleStyle),
+                    children: snapshot.data!
+                        .map(
+                          (l) => CheckboxListTile(
+                            contentPadding: const EdgeInsets.only(left: 8.0),
+                            title: Text(l.title),
+                            subtitle: Text(
+                              l.description ?? '',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            value: l.signedUp,
+                            onChanged: (value) => value == true
+                                ? logic.signupLibrary(l)
+                                : logic.cancelLibrary(l),
+                          ),
+                        )
+                        .toList(),
+                  );
+                } else {
+                  return const SizedBox(
+                    width: 20,
+                    height: 0,
+                    // child: CircularProgressIndicator(),
+                  );
+                }
+              }),
           // WebDav Servers
           for (final server in servers)
             ExpansionTile(
@@ -171,11 +178,11 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [WebDavSettings(server: server)],
             ),
           // add a WebDav server
-          const ExpansionTile(
+          ExpansionTile(
             tilePadding: tilePadding,
             childrenPadding: tilePadding,
-            title: Text('Register WebDAV Server'),
-            children: [WebDavSettings()],
+            title: Text('Register WebDAV Server', style: titleStyle),
+            children: const [WebDavSettings()],
           ),
         ],
       ),

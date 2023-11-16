@@ -26,7 +26,7 @@ const filterIcons = [
 ];
 
 class CartaBloc extends ChangeNotifier {
-  // User? user;
+  // auth user ID
   String? _uid;
 
   int sortIndex = 0;
@@ -34,14 +34,15 @@ class CartaBloc extends ChangeNotifier {
   // bool _hasLibrary = false;
 
   final _books = <CartaBook>[];
+  // download related variables
   final _cancelRequests = <String>{};
   final _isDownloading = <String>{};
-
+  // databases
   final _db = SqliteRepo();
   final _fs = FirebaseFirestore.instance;
-  // NOTE: book server data stored in the local database
+  // book server data stored in the local database
   final List<CartaServer> _servers = <CartaServer>[];
-  // community book shelf
+  // libraries the user signed up
   final List<CartaLibrary> _libraries = <CartaLibrary>[];
 
   CartaBloc();
@@ -52,11 +53,13 @@ class CartaBloc extends ChangeNotifier {
     super.dispose();
   }
 
+  String? get uid => _uid;
   String get currentSort => sortOptions[sortIndex];
   String get currentFilter => filterOptions[filterIndex];
   IconData get sortIcon => sortIcons[sortIndex];
   IconData get filterIcon => filterIcons[filterIndex];
 
+  // set userId
   void setUid(String? uid) {
     _uid = uid;
     // valid user signed in
@@ -67,6 +70,7 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
+  // Return list of books filtered
   List<CartaBook> get books {
     final filterOption = filterOptions[filterIndex];
     // debugPrint('filterOption: $filterOption');
@@ -85,6 +89,29 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
+  //
+  // BOOK
+  //
+
+  // Refresh list of books
+  Future<void> refreshBooks() async {
+    if (_uid is String) {
+      try {
+        final query =
+            await _fs.collection('users').doc(_uid).collection('books').get();
+        _books.clear();
+        for (final doc in query.docs) {
+          _books.add(CartaBook.fromFirestore(doc.data()));
+        }
+        _sortBooks();
+        notifyListeners();
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+  }
+
+  // Create
   Future<bool> addAudioBook(CartaBook book) async {
     if (_uid is String) {
       if (_books.length > maxBooksToCreate) {
@@ -108,6 +135,7 @@ class CartaBloc extends ChangeNotifier {
     return false;
   }
 
+  // Read by Id
   Future<CartaBook?> getAudioBookByBookId(String bookId) async {
     if (_uid is String) {
       try {
@@ -117,7 +145,7 @@ class CartaBloc extends ChangeNotifier {
             .collection('books')
             .doc(bookId)
             .get();
-        return CartaBook.fromFirestore(doc);
+        return CartaBook.fromFirestore(doc.data());
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -125,6 +153,7 @@ class CartaBloc extends ChangeNotifier {
     return null;
   }
 
+  // Delete
   Future deleteAudioBook(CartaBook book) async {
     if (_uid is String) {
       try {
@@ -144,10 +173,9 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
-  // update fields of the book
   //
-  // it is the callers responsibility to do the conversion depending on the
-  // field and the database
+  // Update only certain fields of the book
+  // It is the callers responsibility to do the conversion of the field
   //
   Future<bool> updateBookData(String bookId, Map<String, Object?> data) async {
     if (_uid is String) {
@@ -165,6 +193,29 @@ class CartaBloc extends ChangeNotifier {
       }
     }
     return false;
+  }
+
+  // Book filter
+  void rotateFilterBy() {
+    filterIndex = (filterIndex + 1) % filterOptions.length;
+    notifyListeners();
+  }
+
+  // Book sort
+  void rotateSortBy() {
+    sortIndex = (sortIndex + 1) % sortOptions.length;
+    _sortBooks();
+    notifyListeners();
+  }
+
+  _sortBooks() {
+    final sortOption = sortOptions[sortIndex];
+    // debugPrint('sortOption: $sortOption');
+    if (sortOption == 'title') {
+      _books.sort((a, b) => a.title.compareTo(b.title));
+    } else if (sortOption == 'authors') {
+      _books.sort((a, b) => (a.authors ?? '').compareTo(b.authors ?? ''));
+    }
   }
 
   //
@@ -241,7 +292,7 @@ class CartaBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  // delete audio data
+  // Delete audio data
   Future deleteMediaData(CartaBook book) async {
     final bookDir = book.getBookDirectory();
     for (final entry in bookDir.listSync()) {
@@ -254,47 +305,10 @@ class CartaBloc extends ChangeNotifier {
     notifyListeners();
   }
 
-  void rotateFilterBy() {
-    filterIndex = (filterIndex + 1) % filterOptions.length;
-    notifyListeners();
-  }
-
-  void rotateSortBy() {
-    sortIndex = (sortIndex + 1) % sortOptions.length;
-    _sortBooks();
-    notifyListeners();
-  }
-
-  _sortBooks() {
-    final sortOption = sortOptions[sortIndex];
-    // debugPrint('sortOption: $sortOption');
-    if (sortOption == 'title') {
-      _books.sort((a, b) => a.title.compareTo(b.title));
-    } else if (sortOption == 'authors') {
-      _books.sort((a, b) => (a.authors ?? '').compareTo(b.authors ?? ''));
-    }
-  }
-
-  Future<void> refreshBooks() async {
-    if (_uid is String) {
-      try {
-        final query =
-            await _fs.collection('users').doc(_uid).collection('books').get();
-        _books.clear();
-        for (final doc in query.docs) {
-          _books.add(CartaBook.fromFirestore(doc));
-        }
-        _sortBooks();
-        notifyListeners();
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-  }
-
   //
   // CartaCard
   //
+  // Get Sample Cards
   Future<List<CartaCard>> getSampleBookCards() async {
     final cards = <CartaCard>[];
     final res = await http.get(Uri.parse(urlSelectedBooksJson));
@@ -310,6 +324,7 @@ class CartaBloc extends ChangeNotifier {
     return cards;
   }
 
+  // Get Book from the card
   Future<CartaBook?> getAudioBookFromCard(CartaCard card) async {
     CartaBook? book;
     if (card.source == CartaSource.carta) {
@@ -326,22 +341,26 @@ class CartaBloc extends ChangeNotifier {
   //
   List<CartaServer> get servers => _servers;
 
+  // Refresh server list
   Future refreshBookServers() async {
     _servers.clear();
     _servers.addAll(await _db.getBookServers());
     notifyListeners();
   }
 
+  // Create
   Future addBookServer(CartaServer server) async {
     await _db.addBookServer(server);
     refreshBookServers();
   }
 
+  // Update
   Future updateBookServer(CartaServer server) async {
     await _db.updateBookServer(server);
     refreshBookServers();
   }
 
+  // Delete
   Future deleteBookServer(CartaServer server) async {
     await _db.deleteBookServer(server);
     refreshBookServers();
@@ -353,14 +372,17 @@ class CartaBloc extends ChangeNotifier {
   // bool get hasLibrary => _hasLibrary;
   List<CartaLibrary> get libraries => _libraries;
 
+  // Refresh list of libraries which I own or signed up
   Future refreshLibraries() async {
     if (_uid is String) {
       try {
-        final query =
-            _fs.collection('libraries').where('owner', isEqualTo: _uid);
-        // debugPrint('refreshLibraries: $query');
+        // library I own or I signed up
+        final query = _fs.collection('libraries').where(Filter.or(
+            Filter('owner', isEqualTo: _uid),
+            Filter('members', arrayContains: _uid)));
         final snapshot = await query.get();
         _libraries.clear();
+        debugPrint('refreshLibraries: ${snapshot.docs}');
         for (final doc in snapshot.docs) {
           _libraries.add(CartaLibrary.fromFirestore(doc.id, doc.data()));
         }
@@ -372,26 +394,7 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
-  Future<List<CartaLibrary>> getLibraryList() async {
-    final libraries = <CartaLibrary>[];
-    final snapshot = await _fs.collection('libraries').get();
-
-    for (final doc in snapshot.docs) {
-      debugPrint('getLibraryList.doc: ${doc.data()}');
-      // TODO: check this
-      final library = CartaLibrary.fromFirestore(doc.id, doc.data());
-      if (library.owner != _uid) {
-        if (_libraries.any((l) => l.id == library.id)) {
-          library.signedUp = true;
-        } else {
-          library.signedUp = false;
-        }
-        libraries.add(library);
-      }
-    }
-    return libraries;
-  }
-
+  // Create
   Future<void> createLibrary(CartaLibrary library) async {
     // how many libraries owns already
     if (_uid is String) {
@@ -410,34 +413,123 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
-  Future<void> updateLibrary(CartaLibrary library) async {
+  // Update
+  Future<bool> updateLibrary(CartaLibrary library) async {
     // debugPrint('updateLibrary: ${library.toString()}');
     if (_uid is String && library.id != null) {
-      await _fs
-          .collection('libraries')
-          .doc(library.id)
-          .set(library.toFirestore()..remove('id'));
-      refreshLibraries();
+      try {
+        await _fs
+            .collection('libraries')
+            .doc(library.id)
+            .set(library.toFirestore()..remove('id'));
+        refreshLibraries();
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
+    return false;
   }
 
-  Future<void> deleteLibrary(String? libraryId) async {
+  // Update Data
+  // It is the callers responsibility to do the conversion of the field
+  Future<bool> updateLibraryData(
+      String libraryId, Map<String, Object?> data) async {
+    // debugPrint('updateLibrary: ${library.toString()}');
+    if (_uid is String) {
+      try {
+        await _fs.collection('libraries').doc(libraryId).update(data);
+        refreshLibraries();
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    return false;
+  }
+
+  // Delete
+  Future<bool> deleteLibrary(String? libraryId) async {
     if (libraryId is String) {
-      await _fs.collection('libraries').doc(libraryId).delete();
-      refreshLibraries();
+      try {
+        await _fs.collection('libraries').doc(libraryId).delete();
+        refreshLibraries();
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
+    return false;
   }
 
-  Future signupLibrary(String? libraryId, {String? credential}) async {}
-  Future cancelLibrary(String? libraryId, {String? credential}) async {}
+  // Get my library from the list
+  CartaLibrary? getMyLibrary() {
+    // ASSUME that one can own only one library
+    final index = _libraries.indexWhere((l) => l.owner == _uid);
+    return index == -1 ? null : _libraries[index];
+  }
 
-  Future<List<CartaLibrary>> listLibraries() async {
+  // Get all public libraries available
+  Future<List<CartaLibrary>> getPublicLibraries() async {
     final libraries = <CartaLibrary>[];
+    if (_uid is String) {
+      try {
+        final snapshot = await _fs.collection('libraries').get();
+        for (final doc in snapshot.docs) {
+          // debugPrint('getLibraryList.doc: ${doc.data()}');
+          final library = CartaLibrary.fromFirestore(doc.id, doc.data());
+          // exclude my library from the result
+          if (library.owner != _uid) {
+            // signed up for the library already so appeared in _libraries?
+            if (_libraries.any((l) => l.id == library.id)) {
+              // mark as signed up
+              library.signedUp = true;
+            } else {
+              library.signedUp = false;
+            }
+            libraries.add(library);
+          }
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
     return libraries;
   }
 
-  CartaLibrary? getMyLibrary() {
-    final index = _libraries.indexWhere((l) => l.owner == _uid);
-    return index == -1 ? null : _libraries[index];
+  // Sign Up
+  Future<bool> signupLibrary(CartaLibrary library, {String? credential}) async {
+    if (_uid is String) {
+      try {
+        await _fs
+            .collection('libraries')
+            .doc(library.id)
+            .update({'members': library.members..add(_uid!)});
+        refreshLibraries();
+        notifyListeners();
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    return false;
+  }
+
+  // Cancel
+  Future cancelLibrary(CartaLibrary library, {String? credential}) async {
+    if (_uid is String) {
+      try {
+        await _fs
+            .collection('libraries')
+            .doc(library.id)
+            .update({'members': library.members..remove(_uid!)});
+        refreshLibraries();
+        notifyListeners();
+        return true;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+    return false;
   }
 }
