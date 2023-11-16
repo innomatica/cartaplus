@@ -11,22 +11,22 @@ import 'package:google_sign_in/google_sign_in.dart';
 // https://github.com/firebase/flutterfire/issues/725#issuecomment-657030135
 
 class CartaAuth extends ChangeNotifier {
+  final _auth = FirebaseAuth.instance;
+  late final StreamSubscription _authListener;
+
   User? _user;
   bool loggedIn = false;
-  late final StreamSubscription _authListener;
   String lastError = '';
 
   CartaAuth() {
-    _authListener = FirebaseAuth.instance.authStateChanges().listen((newUser) {
+    _authListener = _auth.authStateChanges().listen((newUser) {
       _user = newUser;
-      debugPrint('auth listener notified user change: $newUser');
+      // debugPrint('auth listener notified user change: $newUser');
       notifyListeners();
     }, onError: (e) {
       debugPrint('authStateChanges Error: $e');
     });
   }
-
-  User? get user => _user;
 
   @override
   void dispose() {
@@ -34,16 +34,17 @@ class CartaAuth extends ChangeNotifier {
     super.dispose();
   }
 
+  User? get user => _user;
   String? get uid => _user?.uid;
   bool get isAuthenticated => _user != null;
 
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await _auth.signOut();
   }
 
   Future<void> reload() async {
-    await FirebaseAuth.instance.currentUser?.reload();
-    _user = FirebaseAuth.instance.currentUser;
+    await _auth.currentUser?.reload();
+    _user = _auth.currentUser;
     notifyListeners();
   }
 
@@ -53,8 +54,7 @@ class CartaAuth extends ChangeNotifier {
       final auth = await account?.authentication;
       final credential = GoogleAuthProvider.credential(
           accessToken: auth?.accessToken, idToken: auth?.idToken);
-
-      return FirebaseAuth.instance.signInWithCredential(credential);
+      return _auth.signInWithCredential(credential);
     } on PlatformException catch (e) {
       // don't be alarmed if this does not catch the exception
       // this is one of the never-fixed bugs in Firebase
