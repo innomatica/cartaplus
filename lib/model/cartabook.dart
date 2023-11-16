@@ -132,27 +132,6 @@ class CartaBook {
     );
   }
 
-  // factory CartaBook.fromMap(Map<String, dynamic> data) {
-  //   return CartaBook(
-  //     bookId: data['bookId'],
-  //     title: data['title'],
-  //     authors: data['authors'] is List
-  //         ? data['authors'][0]['lastName'] // old model
-  //         : data['authors'], // new model
-  //     description: data['description'],
-  //     language: data['language'],
-  //     imageUri: data['imageUri'],
-  //     duration: fromDurationString(data['duration']),
-  //     lastSection: data['lastSection'],
-  //     lastPosition: fromDurationString(data['lastPosition']),
-  //     source: CartaSource.values[data['source']],
-  //     info: data['info'],
-  //     sections: data['sections']
-  //         ?.map<CartaSection>((e) => CartaSection.fromDatabase(e))
-  //         .toList(),
-  //   );
-  // }
-
   factory CartaBook.fromCartaCard(CartaCard card) {
     if (card.data['bookId'] == null || card.data['title'] == null) {
       throw Exception('bookId and title cannot be null');

@@ -11,7 +11,8 @@ exports.triggerUserDelete = functions.auth.user().onDelete(async (user) => {
     const userId = user.uid;
     const colRef = db.collection('users').doc(userId).collection('books');
     const query = colRef.orderBy('__name__').limit(30);
-    try{
+    try {
+        // TODO: delete user library
         // delete books subcollection
         await deleteQueryBatch(db, query);
         // delete user data

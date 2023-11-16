@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../enc_dec.dart';
 
 enum ServerType { nextcloud, webdav, gdrive }
@@ -31,7 +29,7 @@ class CartaServer {
     );
   }
 
-  factory CartaServer.fromFirestore(DocumentSnapshot data) {
+  factory CartaServer.fromFirestore(Map<String, dynamic> data) {
     return CartaServer(
       serverId: data['serverId'],
       title: data['title'],
