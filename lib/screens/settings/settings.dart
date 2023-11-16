@@ -49,33 +49,29 @@ class _SettingsPageState extends State<SettingsPage> {
                 //
                 // Cancel through Google Sign In Authentication
                 //
-                SizedBox(
-                  width: 200,
-                  child: ElevatedButton.icon(
-                    icon: Icon(FlutterIcons.google,
-                        color: Theme.of(context).colorScheme.tertiary),
-                    onPressed: () async {
-                      final credential = await _auth.signInWithGoogle();
-                      if (credential != null) {
-                        credential.user?.delete();
-                        // https://stackoverflow.com/questions/44159819/how-to-dismiss-an-alertdialog-on-a-flatbutton-click
-                        if (mounted) {
-                          Navigator.of(context, rootNavigator: true).pop(true);
-                        }
-                      } else {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                              'Failed to delete account (${_auth.lastError})',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ));
-                        }
+                ElevatedButton.icon(
+                  icon: Icon(FlutterIcons.google,
+                      color: Theme.of(context).colorScheme.tertiary),
+                  onPressed: () async {
+                    final credential = await _auth.signInWithGoogle();
+                    if (credential != null) {
+                      credential.user?.delete();
+                      // https://stackoverflow.com/questions/44159819/how-to-dismiss-an-alertdialog-on-a-flatbutton-click
+                      if (mounted) {
+                        Navigator.of(context, rootNavigator: true).pop(true);
                       }
-                    },
-                    label: const Text('Sign In with Google'),
-                  ),
+                    } else {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            'Failed to delete account (${_auth.lastError})',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ));
+                      }
+                    }
+                  },
+                  label: const Text('Sign In with Google'),
                 ),
               ],
             ),
@@ -178,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
           const ExpansionTile(
             tilePadding: tilePadding,
             childrenPadding: tilePadding,
-            title: Text('Add WebDAV Server'),
+            title: Text('Register WebDAV Server'),
             children: [WebDavSettings()],
           ),
         ],

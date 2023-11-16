@@ -46,6 +46,7 @@ class CartaBloc extends ChangeNotifier {
 
   CartaBloc({required this.auth}) {
     // update book server list when start
+    // TODO: call followings at setAuth call
     refreshBookServers();
     refreshBooks();
     refreshLibraries();

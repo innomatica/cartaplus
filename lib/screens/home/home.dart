@@ -424,7 +424,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.of(context).popAndPushNamed('/settings'),
                         icon: CartaBook.getIconBySource(CartaSource.cloud,
                             color: iconColor),
-                        label: const Text('Register WebDAV server'),
+                        label: const Text('Cloud WebDAV server'),
                       )
                     : const SizedBox(width: 0, height: 0),
                 TextButton.icon(

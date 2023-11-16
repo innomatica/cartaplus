@@ -64,6 +64,8 @@ void main() async {
         ChangeNotifierProvider<ScreenConfig>(
             create: (context) => ScreenConfig()),
         ChangeNotifierProvider<CartaAuth>(create: (_) => CartaAuth()),
+        // TODO: proxyprovider
+        // update: return old with set auth
         ChangeNotifierProvider<CartaBloc>(
           create: (context) => CartaBloc(auth: context.read<CartaAuth>()),
         ),
