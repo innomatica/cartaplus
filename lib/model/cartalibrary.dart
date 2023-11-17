@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'cartabook.dart';
 
 class CartaLibrary {
@@ -24,20 +26,25 @@ class CartaLibrary {
     required this.info,
   });
 
-  factory CartaLibrary.fromFirestore(String id, Map<String, dynamic> data) {
-    return CartaLibrary(
-      id: id,
-      title: data['title'],
-      owner: data['owner'],
-      members: (data['members'] as List).map((e) => e as String).toList(),
-      books: (data['books'] as List)
-          .map((b) => CartaBook.fromFirestore(b))
-          .toList(),
-      description: data['description'],
-      isPublic: data['isPublic'],
-      credential: data['credential'],
-      info: data['info'],
-    );
+  factory CartaLibrary.fromFirestore(String id, Map<String, dynamic>? data) {
+    try {
+      return CartaLibrary(
+        id: id,
+        title: data?['title'],
+        owner: data?['owner'],
+        members: (data?['members'] as List).map((e) => e as String).toList(),
+        books: (data?['books'] as List)
+            .map((b) => CartaBook.fromFirestore(b))
+            .toList(),
+        description: data?['description'],
+        isPublic: data?['isPublic'],
+        credential: data?['credential'],
+        info: data?['info'],
+      );
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   factory CartaLibrary.fromDefault(String userId) {

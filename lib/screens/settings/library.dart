@@ -103,7 +103,7 @@ class _LibrarySettingsState extends State<LibrarySettings> {
                       onPressed: _isnew
                           ? null
                           : () {
-                              _bloc.deleteLibrary(_library.id);
+                              _bloc.deleteLibrary(_library);
                               ExpansionTileController.of(context).collapse();
                             },
                       child: const Text('Delete Library'),

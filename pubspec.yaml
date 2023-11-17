@@ -51,7 +51,6 @@ dependencies:
   xml: ^6.3.0
   path_provider: ^2.0.15
   share_plus: ^7.0.2
-  sqflite: ^2.2.8+4
   path: ^1.8.3
   crypto: ^3.0.3
   mime: ^1.0.4

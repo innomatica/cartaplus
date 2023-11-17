@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import '../enc_dec.dart';
 
@@ -29,22 +30,27 @@ class CartaServer {
     );
   }
 
-  factory CartaServer.fromFirestore(Map<String, dynamic> data) {
-    return CartaServer(
-      serverId: data['serverId'],
-      title: data['title'],
-      type: ServerType.values[data['type'] ?? 0],
-      url: data['url'],
-      settings: data['settings'] == null
-          ? null
-          : (data['settings'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(
-                    key,
-                    ['password', 'username'].contains(key)
-                        ? decrypt(value)
-                        : value,
-                  )),
-    );
+  factory CartaServer.fromFirestore(Map<String, dynamic>? doc) {
+    try {
+      return CartaServer(
+        serverId: doc?['serverId'],
+        title: doc?['title'],
+        type: ServerType.values[doc?['type'] ?? 0],
+        url: doc?['url'],
+        settings: doc?['settings'] == null
+            ? null
+            : (doc?['settings'] as Map<String, dynamic>)
+                .map((key, value) => MapEntry(
+                      key,
+                      ['password', 'username'].contains(key)
+                          ? decrypt(value)
+                          : value,
+                    )),
+      );
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toSqlite() {

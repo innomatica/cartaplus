@@ -73,7 +73,7 @@ Widget buildFabDialog(BuildContext context) {
         for (final library in logic.libraries)
           TextButton.icon(
             onPressed: () {
-              // TODO: refresh library for the new contents
+              logic.refreshLibraries();
               Navigator.of(context).pop();
               showDialog(
                 context: context,

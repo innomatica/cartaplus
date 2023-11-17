@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
@@ -112,24 +113,29 @@ class CartaBook {
   }
 
   factory CartaBook.fromFirestore(Map<String, dynamic>? data) {
-    return CartaBook(
-      bookId: data?['bookId'],
-      title: data?['title'],
-      authors: data?['authors'] is List
-          ? data?['authors'][0]?['lastName'] // old model
-          : data?['authors'], // new model
-      description: data?['description'],
-      language: data?['language'],
-      imageUri: data?['imageUri'],
-      duration: fromDurationString(data?['duration']),
-      lastSection: data?['lastSection'],
-      lastPosition: fromDurationString(data?['lastPosition']),
-      source: CartaSource.values[data?['source']],
-      info: data?['info'],
-      sections: data?['sections']
-          ?.map<CartaSection>((e) => CartaSection.fromDatabase(e))
-          .toList(),
-    );
+    try {
+      return CartaBook(
+        bookId: data?['bookId'],
+        title: data?['title'],
+        authors: data?['authors'] is List
+            ? data?['authors'][0]?['lastName'] // old model
+            : data?['authors'], // new model
+        description: data?['description'],
+        language: data?['language'],
+        imageUri: data?['imageUri'],
+        duration: fromDurationString(data?['duration']),
+        lastSection: data?['lastSection'],
+        lastPosition: fromDurationString(data?['lastPosition']),
+        source: CartaSource.values[data?['source']],
+        info: data?['info'],
+        sections: data?['sections']
+            .map<CartaSection>((e) => CartaSection.fromDatabase(e))
+            .toList(),
+      );
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   factory CartaBook.fromCartaCard(CartaCard card) {

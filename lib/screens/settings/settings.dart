@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ExpansionTile(
               tilePadding: tilePadding,
               childrenPadding: tilePadding,
-              title: Text(server.title),
+              title: Text(server.title, style: titleStyle),
               children: [WebDavSettings(server: server)],
             ),
           // add a WebDav server
