@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:mime/mime.dart';
 
-// import '../repo/sqlite.dart';
 import '../enc_dec.dart';
 import '../shared/constants.dart';
 import '../shared/helpers.dart';
@@ -91,27 +90,6 @@ class CartaBook {
     );
   }
 
-  factory CartaBook.fromSqlite(Map<String, dynamic> data) {
-    return CartaBook(
-      bookId: data['bookId'],
-      title: data['title'],
-      authors: data['authors'].startsWith('[{')
-          ? jsonDecode(data['authors'])[0]['lastName'] // old model
-          : data['authors'], // new model
-      description: data['description'],
-      language: data['language'],
-      imageUri: data['imageUri'],
-      duration: fromDurationString(data['duration']),
-      lastSection: data['lastSection'],
-      lastPosition: fromDurationString(data['lastPosition']),
-      source: CartaSource.values[data['source']],
-      info: jsonDecode(data['info']),
-      sections: jsonDecode(data['sections'])
-          ?.map<CartaSection>((e) => CartaSection.fromDatabase(e))
-          .toList(),
-    );
-  }
-
   factory CartaBook.fromFirestore(Map<String, dynamic>? data) {
     try {
       return CartaBook(
@@ -158,23 +136,6 @@ class CartaBook {
     );
   }
 
-  Map<String, dynamic> toSqlite() {
-    return {
-      'bookId': bookId,
-      'title': title,
-      'authors': authors,
-      'description': description,
-      'language': language,
-      'imageUri': imageUri,
-      'duration': toDurationString(duration),
-      'lastSection': lastSection,
-      'lastPosition': toDurationString(lastPosition),
-      'source': source.index,
-      'info': jsonEncode(info),
-      'sections': jsonEncode(sections?.map((e) => e.toDatabase()).toList()),
-    };
-  }
-
   Map<String, dynamic> toFirestore() {
     return {
       'bookId': bookId,
@@ -194,7 +155,7 @@ class CartaBook {
 
   @override
   String toString() {
-    return toSqlite().toString();
+    return toFirestore().toString();
   }
 
   List<IndexedAudioSource> getAudioSource({int initIndex = 0}) {

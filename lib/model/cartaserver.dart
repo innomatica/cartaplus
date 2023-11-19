@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import '../enc_dec.dart';
@@ -19,16 +18,6 @@ class CartaServer {
     required this.url,
     this.settings,
   });
-
-  factory CartaServer.fromSqlite(Map<String, dynamic> data) {
-    return CartaServer(
-      serverId: data['serverId'],
-      title: data['title'],
-      type: ServerType.values[data['type'] ?? 0],
-      url: data['url'],
-      settings: jsonDecode(data['settings']),
-    );
-  }
 
   factory CartaServer.fromFirestore(Map<String, dynamic>? doc) {
     try {
@@ -53,16 +42,6 @@ class CartaServer {
     }
   }
 
-  Map<String, dynamic> toSqlite() {
-    return {
-      'serverId': serverId,
-      'title': title,
-      'type': type.index,
-      'url': url,
-      'settings': jsonEncode(settings),
-    };
-  }
-
   Map<String, dynamic> toFirestore() {
     return {
       'serverId': serverId,
@@ -78,6 +57,6 @@ class CartaServer {
 
   @override
   String toString() {
-    return toSqlite().toString();
+    return toFirestore().toString();
   }
 }

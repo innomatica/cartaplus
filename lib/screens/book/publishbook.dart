@@ -16,16 +16,16 @@ class PublishBook extends StatelessWidget {
       final index = myLibrary.books.indexWhere((b) => b.bookId == book.bookId);
       return index == -1
           ? IconButton(
-              icon: const Icon(Icons.vertical_align_top_rounded),
-              // upload book
+              icon: const Icon(Icons.thumb_up_off_alt),
+              // recommend book
               onPressed: () {
                 myLibrary.books.add(book);
                 logic.updateLibrary(myLibrary);
               },
             )
           : IconButton(
-              icon: const Icon(Icons.vertical_align_bottom_rounded),
-              // remove book
+              icon: const Icon(Icons.thumb_down_off_alt),
+              // redraw recommendation
               onPressed: () {
                 myLibrary.books.removeWhere((b) => b.bookId == book.bookId);
                 logic.updateLibrary(myLibrary);

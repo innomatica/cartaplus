@@ -91,4 +91,6 @@ rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
 
 ## TODO
 
-- clear firebase local cache after sign off
+- get rid of dialog when adding cloud books
+- change icon for publish and cancel
+- support NextCloud and fix duration issue

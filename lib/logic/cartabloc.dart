@@ -32,7 +32,7 @@ class CartaBloc extends ChangeNotifier {
   // download related variables
   final _cancelRequests = <String>{};
   final _isDownloading = <String>{};
-  // databases
+  // database
   final _db = FirestoreRepo();
   // book server data stored in the local database
   final List<CartaServer> _servers = <CartaServer>[];
@@ -259,7 +259,7 @@ class CartaBloc extends ChangeNotifier {
   }
 
   //
-  //  Book Server
+  //  CartaServer
   //
   List<CartaServer> get servers => _servers;
 
