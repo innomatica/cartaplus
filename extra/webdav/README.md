@@ -12,10 +12,8 @@ to run the server.
 
 Based on Apache2 httpd docker image, its memory footprint is small and runs
 fast. Thus it should work well on smaller embedded machines like Raspberry Pis.
-Since it does not provide certain information about media such as duration,
-Carta seek function may not work correctly.
 
 ## `nextcloud`
-Based on Nextcloud community docker image. It supports Nextcloud/One cloud
-dialects on top of WebDAV. It requires higher machine power.
+Based on Nextcloud community docker image. It requires better hardware.
+
 

@@ -16,7 +16,7 @@ class PublishBook extends StatelessWidget {
       final index = myLibrary.books.indexWhere((b) => b.bookId == book.bookId);
       return index == -1
           ? IconButton(
-              icon: const Icon(Icons.thumb_up_off_alt),
+              icon: const Icon(Icons.playlist_add_check_rounded),
               // recommend book
               onPressed: () {
                 myLibrary.books.add(book);
@@ -24,7 +24,7 @@ class PublishBook extends StatelessWidget {
               },
             )
           : IconButton(
-              icon: const Icon(Icons.thumb_down_off_alt),
+              icon: const Icon(Icons.playlist_remove_rounded),
               // redraw recommendation
               onPressed: () {
                 myLibrary.books.removeWhere((b) => b.bookId == book.bookId);
