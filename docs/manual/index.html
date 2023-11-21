@@ -8,7 +8,7 @@
     <title>Instruction - Carta Plus</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
@@ -17,12 +17,11 @@
         var mkdocs_page_url = null;
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -34,7 +33,7 @@
           <a href=".." class="icon icon-home"> Carta Plus
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -55,7 +54,13 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#add-radio-shows-from-internet-archive">Add Radio Shows from Internet Archive</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#add-audiobooks-from-private-webdav-server">Add AudioBooks from Private WebDAV Server</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#share-books-delete-books">Share Books, Delete Books</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#publish-list-of-favorite-books">Publish List of Favorite Books</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#subscribe-to-public-book-lists">Subscribe to Public Book Lists</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#use-wide-screen-devices-tablets-chromebooks">Use Wide Screen Devices (Tablets, Chromebooks)</a>
     </li>
@@ -81,8 +86,8 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-      <li>Instruction</li>
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Instruction</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -95,7 +100,10 @@
 <ul>
 <li><a href="#add-audiobooks-from-librivox">Add Audiobooks from LibriVox</a></li>
 <li><a href="#add-radio-shows-from-internet-archive">Add Radio Shows from Internet Archive</a></li>
+<li><a href="#add-audiobooks-from-private-webdav-server">Add Audiobooks from Private WebDAV Server</a></li>
 <li><a href="#share-books-delete-books">Share Books, Delete Books</a></li>
+<li><a href="#publish-list-of-favorite-books">Publish List of Favorite Books</a></li>
+<li><a href="#subscribe-to-public-book-lists">Subscribe to Public Book Lists</a></li>
 <li><a href="#use-wide-screen-devices-tablets-chromebooks">Use Wide Screen Devices (Tablets and Chromebooks)</a></li>
 <li><a href="#read-book-text">Read Book Text</a></li>
 </ul>
@@ -139,6 +147,15 @@ select <strong><em>Internet Archive</em></strong></li>
 <li>Find <strong><em>+ Add to my bookshelf</em></strong> button at the bottom and tap it</li>
 </ul>
 <p><img alt="" src="../res/archive_item_add.png" style="width:400px" /></p>
+<h2 id="add-audiobooks-from-private-webdav-server">Add AudioBooks from Private WebDAV Server</h2>
+<ul>
+<li>Go to Settings and register your WebDAV server settings </li>
+</ul>
+<p><img alt="" src="../res/webdav_register.png" style="width:400px" /></p>
+<ul>
+<li>You should be able to navigate and add books from your server</li>
+</ul>
+<p><img alt="" src="../res/webdav_fab_after.png" style="width:400px" /></p>
 <h2 id="share-books-delete-books">Share Books, Delete Books</h2>
 <ul>
 <li>Tap the icon at the right end of the book and go to the details page</li>
@@ -148,6 +165,24 @@ select <strong><em>Internet Archive</em></strong></li>
 <li>In the book details page, find <strong><em>share</em></strong> button and <strong><em>delete</em></strong> button</li>
 </ul>
 <p><img alt="" src="../res/book_detail_page.png" style="width:400px" /></p>
+<h2 id="publish-list-of-favorite-books">Publish List of Favorite Books</h2>
+<ul>
+<li>Go to Settings and create your public public booklist</li>
+</ul>
+<p><img alt="" src="../res/library_create.png" style="width:400px" /></p>
+<ul>
+<li>In the book details page, you can publish favorite book</li>
+</ul>
+<p><img alt="" src="../res/library_add_to.png" style="width:400px" /></p>
+<h2 id="subscribe-to-public-book-lists">Subscribe to Public Book Lists</h2>
+<ul>
+<li>Go to Settings and subscribe to the public book lists</li>
+</ul>
+<p><img alt="" src="../res/library_subscribe.png" style="width:400px" /></p>
+<ul>
+<li>You can check out books from the list</li>
+</ul>
+<p><img alt="" src="../res/library_fab_after.png" style="width:400px" /></p>
 <h2 id="use-wide-screen-devices-tablets-chromebooks">Use Wide Screen Devices (Tablets, Chromebooks)</h2>
 <ul>
 <li>App shows book list on the left, book details on the right by default</li>
@@ -217,14 +252,15 @@ at the top left corner</li>
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>

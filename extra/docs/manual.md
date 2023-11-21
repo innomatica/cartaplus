@@ -2,7 +2,10 @@
 
 * [Add Audiobooks from LibriVox](#add-audiobooks-from-librivox)
 * [Add Radio Shows from Internet Archive](#add-radio-shows-from-internet-archive)
+* [Add Audiobooks from Private WebDAV Server](#add-audiobooks-from-private-webdav-server)
 * [Share Books, Delete Books](#share-books-delete-books)
+* [Publish List of Favorite Books](#publish-list-of-favorite-books)
+* [Subscribe to Public Book Lists](#subscribe-to-public-book-lists)
 * [Use Wide Screen Devices (Tablets and Chromebooks)](#use-wide-screen-devices-tablets-chromebooks)
 * [Read Book Text](#read-book-text)
 
@@ -47,6 +50,16 @@ select ***Internet Archive***
 
 ![](./res/archive_item_add.png){: style="width:400px"}
 
+## Add AudioBooks from Private WebDAV Server
+
+* Go to Settings and register your WebDAV server settings 
+
+![](./res/webdav_register.png){: style="width:400px"}
+
+* You should be able to navigate and add books from your server
+
+![](./res/webdav_fab_after.png){: style="width:400px"}
+
 ## Share Books, Delete Books
 
 * Tap the icon at the right end of the book and go to the details page
@@ -56,6 +69,26 @@ select ***Internet Archive***
 * In the book details page, find ***share*** button and ***delete*** button
 
 ![](./res/book_detail_page.png){: style="width:400px"}
+
+## Publish List of Favorite Books
+
+* Go to Settings and create your public public booklist
+
+![](./res/library_create.png){: style="width:400px"}
+
+* In the book details page, you can publish favorite book
+
+![](./res/library_add_to.png){: style="width:400px"}
+
+## Subscribe to Public Book Lists
+
+* Go to Settings and subscribe to the public book lists
+
+![](./res/library_subscribe.png){: style="width:400px"}
+
+* You can check out books from the list
+
+![](./res/library_fab_after.png){: style="width:400px"}
 
 ## Use Wide Screen Devices (Tablets, Chromebooks)
 
