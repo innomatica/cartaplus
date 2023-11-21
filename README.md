@@ -1,7 +1,7 @@
 # Carta Plus
 
 Note that this project uses Firebase backend. You may need to prepare your
-own Firebase project and create a skeleton app with unique id, then copy 
+own Firebase project and create a skeleton app with unique id, then copy
 necessay files from this repo. The process goes like this roughly.
 
 ## Cloud
@@ -54,7 +54,7 @@ DavLockDB /usr/local/share/apache2/DavLock
 * password files
 ```
 sudo mkdir -p /usr/local/share/apache2
-sudo hwpasswd -c webdav-pass username
+sudo htpasswd -c webdav-pass username
 sudo chown www-data:www-data /usr/local/share/apache2/webdav-pass
 ```
 
