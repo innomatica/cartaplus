@@ -52,9 +52,13 @@ select ***Internet Archive***
 
 ## Add AudioBooks from Private WebDAV Server
 
-* Go to Settings and register your WebDAV server settings 
+* Go to Settings and enter your WebDAV parameters 
 
-![](./res/webdav_register.png){: style="width:400px"}
+![](./res/webdav_settings.png){: style="width:400px"}
+
+* In case of Nextcloud, check this [document for the directory](https://docs.nextcloud.com/server/latest/user_manual/en/files/access_webdav.html#third-party-webdav-clients)
+
+![](./res/nextcloud_settings.png){: style="width:400px"}
 
 * You should be able to navigate and add books from your server
 
