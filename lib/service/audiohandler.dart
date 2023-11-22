@@ -39,13 +39,28 @@ class CartaAudioHandler extends BaseAudioHandler
     // listen to playerStateStream
     _subPlayerState =
         _player.playerStateStream.listen((PlayerState state) async {
-      log('playerState: ${state.playing}  ${state.processingState}');
+      // log('playerState: ${state.playing}  ${state.processingState}');
       if (state.processingState == ProcessingState.loading && state.playing) {
-        log('start of the book');
-        // broadcast initial mediaItem
-        mediaItem.add(_player.sequence?[_player.currentIndex ?? 0].tag);
+        log('loading & playing');
+        //
+        // (A) broadcast mediaItem when loading
+        //     - (PROS) it is called only once each media
+        //     - (CONS) _player has no duration info at this point
+        //
+        // broadcast mediaItem
+        // final tag = _player.sequence?[_player.currentIndex ?? 0].tag;
+        // mediaItem.add(tag);
       } else if (state.processingState == ProcessingState.ready &&
           _player.playing) {
+        log('ready & playing');
+        //
+        // (B) broadcast mediaItem when ready
+        //     - (PROS) it may be called multiple times when seek is used
+        //     - (CONS) _player has accurate duration info
+        //
+        // broadcast mediaItem
+        final tag = _player.sequence?[_player.currentIndex ?? 0].tag;
+        mediaItem.add(tag?.copyWith(duration: _player.duration));
         // _updateBookmark();
       } else if (state.processingState == ProcessingState.completed &&
           state.playing == true) {
@@ -55,20 +70,14 @@ class CartaAudioHandler extends BaseAudioHandler
     });
     // listen to currentIndexStream
     _subCurrentIndex = _player.currentIndexStream.listen((int? index) async {
-      log('currentIndexState: $index');
-      // detecting change of media
+      log('currentIndexState: $index, ${_player.processingState}');
+      // detect change of media
       if (index != null &&
           index > 0 &&
-          _player.processingState != ProcessingState.idle &&
-          _player.processingState != ProcessingState.completed) {
-        // broadcast subsequent mediaItems
-        log('new section loaded:$index, state:${_player.processingState}');
+          _player.processingState == ProcessingState.ready) {
         // broadcast mediaItem
-        mediaItem.add(_player.sequence?[index].tag);
-        // broadcast queue
-        if (_player.sequence?.isNotEmpty == true) {
-          queue.add(_player.sequence!.map((s) => s.tag as MediaItem).toList());
-        }
+        final tag = _player.sequence?[index].tag;
+        mediaItem.add(tag?.copyWith(duration: _player.duration));
       }
     });
     // listen to playbackEventStream
