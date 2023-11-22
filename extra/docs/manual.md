@@ -3,6 +3,7 @@
 * [Add Audiobooks from LibriVox](#add-audiobooks-from-librivox)
 * [Add Radio Shows from Internet Archive](#add-radio-shows-from-internet-archive)
 * [Add Audiobooks from Private WebDAV Server](#add-audiobooks-from-private-webdav-server)
+* [Set Up Private WebDAV Server](#set-up-private-webdav-server)
 * [Share Books, Delete Books](#share-books-delete-books)
 * [Publish List of Favorite Books](#publish-list-of-favorite-books)
 * [Subscribe to Public Book Lists](#subscribe-to-public-book-lists)
@@ -63,6 +64,10 @@ select ***Internet Archive***
 * You should be able to navigate and add books from your server
 
 ![](./res/webdav_fab_after.png){: style="width:400px"}
+
+## Set Up Private WebDAV Server
+
+If you are new to WebDAV, visit [this page for easy setup](https://github.com/innomatica/cartaplus/tree/master/extra/webdav)
 
 ## Share Books, Delete Books
 
