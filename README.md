@@ -91,3 +91,5 @@ rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
 
 ## TODO
 
+- store filter and sort at local storage
+- when updating view, hide default (episodes.length == 0) screen
