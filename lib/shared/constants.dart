@@ -1,7 +1,7 @@
 // app info
 const appId = 'com.innomatic.cartaplus';
 const appName = 'Carta Plus';
-const appVersion = '2.4.3+30';
+const appVersion = '2.4.4+31';
 const emailDeveloper = 'nuntium.ubique@gmail.com';
 const urlGooglePlay = 'https://play.google.com/store/apps/details?id=$appId';
 const urlAppStore = null;
