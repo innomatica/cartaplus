@@ -16,7 +16,7 @@ Future<CartaAudioHandler> createAudioHandler() async {
   return await AudioService.init(
     builder: () => CartaAudioHandler(),
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.innomatic.carta.channel.audio',
+      androidNotificationChannelId: 'com.innomatic.cartaplus.channel.audio',
       androidNotificationChannelName: 'Carta playback',
       androidNotificationOngoing: true,
       androidNotificationIcon: 'drawable/app_icon',
