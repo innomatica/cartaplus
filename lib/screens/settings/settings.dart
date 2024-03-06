@@ -56,11 +56,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     if (credential != null) {
                       credential.user?.delete();
                       // https://stackoverflow.com/questions/44159819/how-to-dismiss-an-alertdialog-on-a-flatbutton-click
-                      if (mounted) {
+                      if (context.mounted) {
                         Navigator.of(context, rootNavigator: true).pop(true);
                       }
                     } else {
-                      if (mounted) {
+                      if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
                             'Failed to delete account (${_auth.lastError})',

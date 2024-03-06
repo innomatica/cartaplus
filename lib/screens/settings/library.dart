@@ -118,7 +118,7 @@ class _LibrarySettingsState extends State<LibrarySettings> {
                           _isnew
                               ? await _bloc.createLibrary(_library)
                               : await _bloc.updateLibrary(_library);
-                          if (mounted) {
+                          if (context.mounted) {
                             ExpansionTileController.of(context).collapse();
                           }
                         }
