@@ -4,6 +4,7 @@
     <!-- just audio background: ADD THESE TWO PERMISSIONS -->
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <application
         android:label="Carta Plus"
         android:name="${applicationName}"

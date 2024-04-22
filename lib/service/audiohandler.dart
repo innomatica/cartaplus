@@ -15,11 +15,11 @@ const rewindInterval = Duration(seconds: 30);
 Future<CartaAudioHandler> createAudioHandler() async {
   return await AudioService.init(
     builder: () => CartaAudioHandler(),
-    config: const AudioServiceConfig(
+    config: AudioServiceConfig(
       androidNotificationChannelId: 'com.innomatic.cartaplus.channel.audio',
       androidNotificationChannelName: 'Carta playback',
       androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
+      androidStopForegroundOnPause: false,
       androidNotificationIcon: 'drawable/app_icon',
       fastForwardInterval: fastForwardInterval,
       rewindInterval: rewindInterval,
