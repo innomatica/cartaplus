@@ -2,9 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+// import 'package:async/async.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:just_audio/just_audio.dart';
 import 'package:mime/mime.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/cartabook.dart';
@@ -12,7 +16,9 @@ import '../model/cartacard.dart';
 import '../model/cartaserver.dart';
 import '../model/cartalibrary.dart';
 import '../repo/firestore.dart';
+import '../service/audiohandler.dart';
 import '../service/webpage.dart';
+import '../shared/helpers.dart';
 import '../shared/settings.dart';
 
 const sortOptions = ['title', 'authors'];
@@ -29,6 +35,9 @@ class CartaBloc extends ChangeNotifier {
   int _sortIndex = 0;
   int _filterIndex = 0;
   late final SharedPreferences _prefs;
+  late final CartaAudioHandler _handler;
+
+  StreamSubscription? _subPlayState;
 
   final _books = <CartaBook>[];
   // download related variables
@@ -41,14 +50,23 @@ class CartaBloc extends ChangeNotifier {
   // libraries the user signed up
   final List<CartaLibrary> _libraries = <CartaLibrary>[];
 
-  CartaBloc() {
+  CartaBloc(CartaAudioHandler handler) {
+    _handler = handler;
     init();
+  }
+
+  @override
+  dispose() {
+    _subPlayState?.cancel();
+    _handler.dispose();
+    super.dispose();
   }
 
   void init() async {
     _prefs = await SharedPreferences.getInstance();
     _sortIndex = _prefs.getInt('sortIndex') ?? 0;
     _filterIndex = _prefs.getInt('filterIndex') ?? 0;
+    _handlePlayStateChange();
   }
 
   // set userId
@@ -62,16 +80,114 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
+  // getters
   String? get uid => _db.uid;
   String get currentSort => sortOptions[_sortIndex];
   String get currentFilter => filterOptions[_filterIndex];
   IconData get sortIcon => sortIcons[_sortIndex];
   IconData get filterIcon => filterIcons[_filterIndex];
 
+  // from handler
+  Duration get position => _handler.position;
+  BehaviorSubject<List<MediaItem>> get queue => _handler.queue;
+  BehaviorSubject<MediaItem?> get mediaItem => _handler.mediaItem;
+  BehaviorSubject<PlaybackState> get playbackState => _handler.playbackState;
+  MediaItem? get currentTag => _handler.mediaItem.value;
+  String? get currentBookId => currentTag?.extras?['bookId'];
+  int? get currentSectionIdx => currentTag?.extras?['sectionIdx'];
+  // from handler.player
+  Duration get duration => _handler.duration;
+  Stream<Duration> get positionStream => _handler.positionStream;
+
+  //
+  // Due to some potential issues, we need to directly access to the
+  // _handler.player.playerStateStream instead of _handler.playbackStateStream
+  //
+  void _handlePlayStateChange() {
+    _subPlayState = _handler.playerStateStream.listen((PlayerState state) {
+      logDebug('playerState: ${state.playing}  ${state.processingState}');
+      if (state.processingState == ProcessingState.ready) {
+        if (state.playing) {
+          // logDebug('START: $currentBookId, $currentSectionIdx, $position');
+        } else {
+          // logDebug('PAUSED: $currentBookId, $currentSectionIdx, $position');
+          if (position.inSeconds > 0) _updateBookmark();
+        }
+      } else if (state.processingState == ProcessingState.buffering) {
+        if (state.playing) {
+          // logDebug('SEEK: $currentBookId, $currentSectionIdx, $position');
+          if (position.inSeconds > 0) _updateBookmark();
+        } else {
+          // you can update lastSection
+          // logDebug('LOAD: $currentBookId, $currentSectionIdx, $position');
+        }
+      }
+    });
+  }
+
+  //
+  // AudioHandler proxies
+  //
+  Future<void> stop() => _handler.stop();
+  Future<void> pause() => _handler.pause();
+  Future<void> rewind() => _handler.rewind();
+  Future<void> fastForward() => _handler.fastForward();
+  Future<void> seek(Duration position) => _handler.seek(position);
+  Future<void> setSpeed(double speed) => _handler.setSpeed(speed);
+  Future<void> skipToNext() => _handler.skipToNext();
+  Future<void> skipToPrevious() => _handler.skipToPrevious();
+
+  Future<void> resume() async {
+    if (_handler.queue.value.isNotEmpty) {
+      _handler.play();
+    }
+  }
+
+  Future<void> play(CartaBook? book, {int? sectionIdx}) async {
+    // logDebug('handler.play: $sectionIdx, $book');
+    if (book == null) {
+      // resume paused book
+      resume();
+    } else if (currentBookId == book.bookId) {
+      // the same book as current one
+      if (currentSectionIdx == sectionIdx) {
+        logDebug(
+            'play same book same section: ${book.title} ${book.bookId} $sectionIdx');
+        _handler.playing ? pause() : resume();
+      } else {
+        logDebug(
+            'play same book different section: ${book.title} ${book.bookId} $sectionIdx');
+        if (sectionIdx != null) _handler.skipToQueueItem(sectionIdx);
+      }
+    } else {
+      // new book
+      logDebug('play new book: ${book.title} ${book.bookId} $sectionIdx');
+      // if currently playing
+      if (_handler.playing &&
+          currentBookId != null &&
+          currentSectionIdx != null) {
+        // and pause before moving on => this will save the bookmark
+        await _handler.pause();
+      }
+
+      // load new audio source
+      final audioSources = book.getAudioSources();
+      await _handler.setAudioSource(
+        audioSources,
+        initialIndex: sectionIdx ?? book.lastSection ?? 0,
+        initialPosition:
+            sectionIdx == book.lastSection ? book.lastPosition ?? 0 : 0,
+      );
+
+      // start play
+      _handler.play();
+    }
+  }
+
   // Return list of books filtered
   List<CartaBook> get books {
     final filterOption = filterOptions[_filterIndex];
-    // debugPrint('filterOption: $filterOption');
+    // logDebug('filterOption: $filterOption');
     if (filterOption == 'librivox') {
       return _books
           .where((b) =>
@@ -116,6 +232,12 @@ class CartaBloc extends ChangeNotifier {
 
   // Delete
   Future deleteAudioBook(CartaBook book) async {
+    if (book.bookId == currentBookId) {
+      if (_handler.playing) {
+        await _handler.stop();
+      }
+      _handler.clearQueue();
+    }
     // remove stored data regardless of book.source
     await book.deleteBookDirectory();
     // remove database entry
@@ -134,8 +256,13 @@ class CartaBloc extends ChangeNotifier {
   // Update only certain fields of the book: the caller has to
   //  1. do the conversion of the field
   //  2. refresh screen contents when it returns true
-  Future<bool> updateBookData(String bookId, Map<String, Object?> data) async {
-    return await _db.updateBookData(bookId, data);
+  // Future<bool> updateBookData(String bookId, Map<String, Object?> data) async {
+  //  return await _db.updateBookData(bookId, data);
+  // }
+
+  // Update book.lastSection and book.lastPosition
+  Future _updateBookmark() async {
+    // TOOD:
   }
 
   // Book filter
@@ -155,7 +282,7 @@ class CartaBloc extends ChangeNotifier {
 
   _sortBooks() {
     final sortOption = sortOptions[_sortIndex];
-    // debugPrint('sortOption: $sortOption');
+    // logDebug('sortOption: $sortOption');
     if (sortOption == 'title') {
       _books.sort((a, b) => a.title.compareTo(b.title));
     } else if (sortOption == 'authors') {
@@ -197,11 +324,11 @@ class CartaBloc extends ChangeNotifier {
     _isDownloading.add(book.bookId);
     // download each section data
     for (final section in book.sections!) {
-      // debugPrint('downloading:${section.index}');
+      // logDebug('downloading:${section.index}');
       notifyListeners();
       // break if cancelled
       if (_cancelRequests.contains(book.bookId)) {
-        debugPrint('download canceled: ${book.title}');
+        logDebug('download canceled: ${book.title}');
         break;
       }
       // otherwise go ahead
@@ -224,7 +351,7 @@ class CartaBloc extends ChangeNotifier {
     }
     // notify the end of download
     _isDownloading.remove(book.bookId);
-    // debugPrint('download done: ${book.title}');
+    // logDebug('download done: ${book.title}');
     notifyListeners();
   }
 

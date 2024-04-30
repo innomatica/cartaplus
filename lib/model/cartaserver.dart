@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import '../enc_dec.dart';
+import '../shared/helpers.dart';
 
 enum ServerType { nextcloud, webdav, gdrive }
 
@@ -37,7 +36,7 @@ class CartaServer {
                     )),
       );
     } catch (e) {
-      log(e.toString());
+      logError(e.toString());
       rethrow;
     }
   }

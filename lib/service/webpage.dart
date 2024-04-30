@@ -1,7 +1,3 @@
-// import 'package:feed_parser/feed_parser.dart';
-// import 'dart:developer';
-
-import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 
@@ -13,8 +9,8 @@ class WebPageParser {
   static Future<CartaBook?> getBookFromHtml(
       {required String html, required String url}) async {
     CartaBook? book;
-    // debugPrint('url: $url');
-    // log('html: $html');
+    // logDebug('url: $url');
+    // logDebug('html: $html');
     final document = parse(html);
 
     if (url.contains('archive.org')) {
@@ -40,15 +36,15 @@ class WebPageParser {
       String? title;
       String? uri;
       String? durString;
-      Duration? duration;
+      // Duration? duration;
 
       final theatre = document.querySelectorAll(
           '#theatre-ia-wrap > div[itemtype="http://schema.org/AudioObject"]');
       for (final item in theatre) {
-        // debugPrint('item: ${item.innerHtml}');
+        // logDebug('item: ${item.innerHtml}');
         for (final child in item.children) {
-          // debugPrint('child: ${child.localName}');
-          // debugPrint('child: ${child.attributes}');
+          // logDebug('child: ${child.localName}');
+          // logDebug('child: ${child.attributes}');
           if (child.attributes.containsKey('itemprop')) {
             if (child.attributes['itemprop'] == 'name') {
               // title
@@ -59,16 +55,16 @@ class WebPageParser {
             } else if (child.attributes['itemprop'] == 'duration') {
               // duration
               durString = child.attributes['content']?.trim();
-              if (durString != null && durString.length > 5) {
-                final totalSecs = int.tryParse(
-                        durString.substring(4, durString.length - 1)) ??
-                    0;
-                duration = Duration(
-                  hours: totalSecs ~/ 3600,
-                  minutes: (totalSecs % 3600) ~/ 60,
-                  seconds: (totalSecs % 60),
-                );
-              }
+              // if (durString != null && durString.length > 5) {
+              //   final totalSecs = int.tryParse(
+              //           durString.substring(4, durString.length - 1)) ??
+              //       0;
+              //   duration = Duration(
+              //     hours: totalSecs ~/ 3600,
+              //     minutes: (totalSecs % 3600) ~/ 60,
+              //     seconds: (totalSecs % 60),
+              //   );
+              // }
             }
           }
         }
@@ -78,7 +74,9 @@ class WebPageParser {
               index: sections.length,
               title: title.trim(),
               uri: uri.trim(),
-              duration: duration,
+              duration: int.tryParse(
+                      durString?.substring(4, durString.length - 1) ?? '0') ??
+                  0,
               info: {},
             ),
           );
@@ -105,7 +103,7 @@ class WebPageParser {
       //
       String? urlRss;
       String? librivoxId;
-      Duration? duration;
+      int? duration;
       String? textUrl;
       final sections = <CartaSection>[];
 
@@ -151,7 +149,7 @@ class WebPageParser {
             } else if (dt.text.contains('Running Time')) {
               // running time
               final dd = dt.nextElementSibling;
-              duration = getDurationFromString(dd?.text);
+              duration = durationToSeconds(dd?.text);
             }
           }
           // get all p a tags
@@ -170,21 +168,21 @@ class WebPageParser {
           int index = 0;
           String title = 'Unknown';
           String uri = '';
-          Duration? duration;
+          int? duration;
 
           for (final tr in trs) {
             duration = null;
             // map must be defined inside
             final info = <String, dynamic>{};
-            // debugPrint('row: ${tr.text}');
+            // logDebug('row: ${tr.text}');
             final tds = tr.getElementsByTagName('td');
             for (final td in tds) {
               final atag = td.querySelector('a');
-              // debugPrint('atag: ${atag?.text}');
+              // logDebug('atag: ${atag?.text}');
               if (atag == null) {
                 // duration (comes first) or language
-                // debugPrint('duation: ${td.text}');
-                duration ??= getDurationFromString(td.text);
+                // logDebug('duation: ${td.text}');
+                duration ??= durationToSeconds(td.text);
               } else if (atag.className == 'play-btn') {
                 // uri first candidate
                 uri = atag.attributes['href'] ?? '';
@@ -253,7 +251,7 @@ class WebPageParser {
         imageUrl = 'https://legamus.eu${imageUrl.trim()}';
       }
 
-      Duration? duration;
+      int? duration;
       final sections = <CartaSection>[];
 
       // audio page url
@@ -265,17 +263,17 @@ class WebPageParser {
         if (res.statusCode == 200) {
           final audioPage = parse(res.body);
           final rows = audioPage.querySelectorAll('#player_table tr');
-          // debugPrint('rows: $rows');
+          // logDebug('rows: $rows');
           int index = 0;
           for (final row in rows) {
-            // debugPrint('row: $row');
+            // logDebug('row: $row');
             final titleRow = row.querySelector('.section span')?.innerHtml;
             if (titleRow != null) {
               final uri =
                   row.querySelector('.downloadlinks a')?.attributes['href'] ??
                       "";
               final title = titleRow.split('(')[0].trim();
-              final duration = getDurationFromString(
+              final duration = durationToSeconds(
                   RegExp(r'\(([^)]+)\)').firstMatch(titleRow)?.group(1));
 
               sections.add(CartaSection(
@@ -302,7 +300,7 @@ class WebPageParser {
         info: {'siteUrl': url},
       );
     }
-    // debugPrint('book:$book');
+    logDebug('getBookFromHTML:$book');
     return book;
   }
 
@@ -312,14 +310,15 @@ class WebPageParser {
       if (res.statusCode == 200) {
         return await getBookFromHtml(html: res.body, url: url);
       }
-      debugPrint('status code: ${res.statusCode}');
+      logDebug('status code: ${res.statusCode}');
     } catch (e) {
-      debugPrint(e.toString());
+      logError(e.toString());
     }
 
     return null;
   }
 
+/*
   static Duration? getDurationFromString(String? durationStr) {
     if (durationStr != null && durationStr.isNotEmpty) {
       final times = durationStr.split(':');
@@ -337,5 +336,23 @@ class WebPageParser {
       }
     }
     return null;
+  }
+  */
+
+  static int? durationToSeconds(String? durationStr) {
+    int? result;
+    if (durationStr != null && durationStr.isNotEmpty) {
+      final times = durationStr.split(':');
+      if (times.length == 3) {
+        result = (int.tryParse(times[0]) ?? 0) * 3600 +
+            (int.tryParse(times[1]) ?? 0) * 60 +
+            (int.tryParse(times[2]) ?? 0);
+      } else if (times.length == 2) {
+        result =
+            (int.tryParse(times[0]) ?? 0) * 60 + (int.tryParse(times[1]) ?? 0);
+      }
+    }
+    // logDebug('durationToSeconds:$durationStr => $result');
+    return result;
   }
 }

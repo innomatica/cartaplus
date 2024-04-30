@@ -33,6 +33,7 @@ void main() async {
   initialWindowWidth = size.width;
   initialWindowHeight = size.height;
   isScreenWide = initialWindowWidth > 600;
+  // logDebug('size: ${size.width}, ${size.height}');
 
   // firebase
   await Firebase.initializeApp(
@@ -65,15 +66,15 @@ void main() async {
             create: (context) => ScreenConfig()),
         ChangeNotifierProvider<CartaAuth>(create: (_) => CartaAuth()),
         ChangeNotifierProxyProvider<CartaAuth, CartaBloc>(
-          create: (context) => CartaBloc(),
-          update: (context, auth, bloc) => bloc!..setUid(auth.uid),
+          create: (_) => CartaBloc(handler),
+          update: (_, auth, bloc) => bloc!..setUid(auth.uid),
         ),
-        Provider<CartaAudioHandler>(
-            create: (context) {
-              handler.setLogic(context.read<CartaBloc>());
-              return handler;
-            },
-            dispose: (_, __) => handler.dispose()),
+        // Provider<CartaAudioHandler>(
+        //   create: (context) {
+        //     handler.setLogic(context.read<CartaBloc>());
+        //     return handler;
+        //   },
+        //   dispose: (_, __) => handler.dispose()),
       ],
       child: const MyApp(),
     ),
@@ -93,8 +94,8 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: (settings) {
           if (settings.name != null) {
             final uri = Uri.parse(settings.name!);
-            // debugPrint('path: ${uri.path}');
-            // debugPrint('params: ${uri.queryParameters}');
+            // logDebug('path: ${uri.path}');
+            // logDebug('params: ${uri.queryParameters}');
             if (uri.path == '/') {
               return MaterialPageRoute(builder: (context) => const Wrapper());
             } else if (uri.path == '/selected') {

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
@@ -40,9 +39,11 @@ class CartaBook {
   String? description;
   String? language;
   String? imageUri;
-  Duration? duration;
+  // Duration? duration;
+  int? duration;
   int? lastSection;
-  Duration? lastPosition;
+  // Duration? lastPosition;
+  int? lastPosition;
   CartaSource source;
   Map<String, dynamic> info;
   List<CartaSection>? sections;
@@ -72,9 +73,10 @@ class CartaBook {
       authors: result['authors'].join(','),
       description: result['description'],
       language: result['language'],
-      duration: fromDurationString(result['totaltime']),
+      duration: hmsToSeconds(result['totaltime']),
       lastSection: 0,
-      lastPosition: Duration.zero,
+      // lastPosition: Duration.zero,
+      lastPosition: 0,
       source: CartaSource.librivox,
       info: {
         'id': result['id'],
@@ -91,6 +93,7 @@ class CartaBook {
   }
 
   factory CartaBook.fromFirestore(Map<String, dynamic>? data) {
+    // logDebug('fromFirestore: $data');
     try {
       return CartaBook(
         bookId: data?['bookId'],
@@ -101,9 +104,9 @@ class CartaBook {
         description: data?['description'],
         language: data?['language'],
         imageUri: data?['imageUri'],
-        duration: fromDurationString(data?['duration']),
+        duration: hmsToSeconds(data?['duration']),
         lastSection: data?['lastSection'],
-        lastPosition: fromDurationString(data?['lastPosition']),
+        lastPosition: hmsToSeconds(data?['lastPosition']),
         source: CartaSource.values[data?['source']],
         info: data?['info'],
         sections: data?['sections']
@@ -111,7 +114,7 @@ class CartaBook {
             .toList(),
       );
     } catch (e) {
-      log(e.toString());
+      logError(e.toString());
       rethrow;
     }
   }
@@ -144,9 +147,9 @@ class CartaBook {
       'description': description,
       'language': language,
       'imageUri': imageUri,
-      'duration': toDurationString(duration),
+      'duration': secondsToHms(duration),
       'lastSection': lastSection,
-      'lastPosition': toDurationString(lastPosition),
+      'lastPosition': secondsToHms(lastPosition),
       'source': source.index,
       'info': info,
       'sections': sections?.map((e) => e.toDatabase()).toList(),
@@ -158,7 +161,7 @@ class CartaBook {
     return toFirestore().toString();
   }
 
-  List<IndexedAudioSource> getAudioSource({int initIndex = 0}) {
+  List<IndexedAudioSource> getAudioSources({int initIndex = 0}) {
     final sectionData = <IndexedAudioSource>[];
     // book must have valid sections
     if (sections != null && sections!.isNotEmpty) {
@@ -174,7 +177,9 @@ class CartaBook {
             title: section.title,
             // book title as album
             album: title == section.title ? authors : title,
-            duration: section.duration,
+            duration: section.duration != null
+                ? Duration(seconds: section.duration!)
+                : Duration.zero,
             // artHeaders are not recognized by the background process
             // artUri: imageUri != null ? Uri.parse(imageUri!) : null,
             // artHeaders: headers,
@@ -185,6 +190,7 @@ class CartaBook {
               'bookTitle': title,
               'sectionIdx': section.index,
               'sectionTitle': section.title,
+              // 'seekPos': section.seekPos,
             },
           );
           // check if local data for the section exists
@@ -194,46 +200,46 @@ class CartaBook {
               Uri.parse('file://${file.path}'),
               tag: tag,
             ));
-            // debugPrint('file source: ${file.path}');
+            // logDebug('file source: ${file.path}');
           } else {
             // NOTE: this is experimental
             // https://pub.dev/packages/just_audio#working-with-caches
             if (info['cached'] == true) {
-              // debugPrint('${section.title}:LockCachingAudiSource');
+              // logDebug('${section.title}:LockCachingAudiSource');
               sectionData.add(LockCachingAudioSource(
                 Uri.parse(section.uri),
                 headers: headers,
                 tag: tag,
               ));
             } else {
-              // debugPrint('${section.title}:UriAudioSource');
+              // logDebug('${section.title}:UriAudioSource');
               sectionData.add(AudioSource.uri(
                 Uri.parse(section.uri),
                 headers: headers,
                 tag: tag,
               ));
             }
-            // debugPrint('url headers: ${headers.toString()}');
-            // debugPrint('url source: ${section.uri}');
+            // logDebug('url headers: ${headers.toString()}');
+            // logDebug('url source: ${section.uri}');
           }
-          // debugPrint('adding: ${section.title}');
+          // logDebug('adding: ${section.title}');
         }
       }
     }
-    // debugPrint('getAudioSource.return: $sectionData');
+    // logDebug('getAudioSource.return: $sectionData');
     return sectionData;
   }
 
   Map<String, String>? getAuthHeaders() {
-    // debugPrint('getAuthHeaders: $info');
+    // logDebug('getAuthHeaders: $info');
     if (info.containsKey('authentication') &&
         info['authentication'] == 'basic' &&
         info.containsKey('username') &&
         info.containsKey('password')) {
-      // debugPrint('info: $info');
+      // logDebug('info: $info');
       final username = decrypt(info['username']);
       final password = decrypt(info['password']);
-      // debugPrint('username: $username, password: $password');
+      // logDebug('username: $username, password: $password');
       final credential = base64Encode(utf8.encode('$username:$password'));
       return {
         HttpHeaders.authorizationHeader: 'Basic $credential',
@@ -350,19 +356,19 @@ class CartaBook {
       try {
         final file = File('${bookDir.path}/${imageUri!.split('/').last}');
         if (file.existsSync()) {
-          // debugPrint('albumImage:FileImage');
+          // logDebug('albumImage:FileImage');
           return FileImage(file);
         }
-        // debugPrint('albumImage:NetworkImage');
+        // logDebug('albumImage:NetworkImage');
         // NOTE: do not use AWAIT here
         downloadCoverImage();
         // this will download the image twice but for the first time only
         return NetworkImage(imageUri!, headers: getAuthHeaders());
       } catch (e) {
-        debugPrint(e.toString());
+        logError(e.toString());
       }
     }
-    // debugPrint('albumImage:AssetImage');
+    // logDebug('albumImage:AssetImage');
     return const AssetImage(defaultAlbumImage);
   }
 

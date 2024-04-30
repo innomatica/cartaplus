@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 IconData getContentTypeIcon(ContentType type) {
@@ -33,27 +34,42 @@ String getIdFromUrl(String url) {
   return sha1.convert(utf8.encode(url)).toString().substring(0, 20);
 }
 
-Duration? fromDurationString(String? time) {
+int? hmsToSeconds(String? time) {
+  int? result;
   if (time != null) {
+    // expect hh:mm:ss.ms
     final hms = time.split('.')[0].split(':');
     if (hms.length < 3) {
-      return Duration.zero;
+      // invalid string
+      // return Duration.zero;
+      result = 0;
     }
-    return Duration(
-      hours: int.tryParse(hms[0]) ?? 0,
-      minutes: int.tryParse(hms[1]) ?? 0,
-      seconds: int.tryParse(hms[2]) ?? 0,
-    );
+    result = (int.tryParse(hms[0]) ?? 0) * 3600 +
+        (int.tryParse(hms[1]) ?? 0) * 60 +
+        (int.tryParse(hms[2]) ?? 0);
   }
-  return null;
+  // logDebug('hmsToSeconds: $time => $result');
+  return result;
 }
 
-String? toDurationString(Duration? duration) {
-  if (duration != null) {
-    return duration.toString().split('.')[0];
+String secondsToHms(int? seconds) {
+  String result = '00:00:00';
+  if (seconds != null) {
+    // return '${seconds ~/ 3600}:${seconds ~/ 60}:${seconds % 60}';
+    int h = seconds ~/ 3600;
+    int m = (seconds - h * 3600) ~/ 60;
+    int s = seconds % 60;
+
+    result = '$h:${(m < 10 ? "0$m:" : "$m:") + (s < 10 ? "0$s" : "$s")}';
   }
-  return null;
+  // logDebug('secondsToHms:$seconds => $result');
+  return result;
 }
 
 // application document directory
 String? appDocDirPath;
+
+void logDebug(String text) =>
+    kDebugMode ? debugPrint('\x1B[32m$text\x1B[0m') : () => {};
+void logWarn(String text) => debugPrint('\x1B[33m$text\x1B[0m');
+void logError(String text) => debugPrint('\x1B[31m$text\x1B[0m');

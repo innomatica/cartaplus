@@ -45,7 +45,7 @@ class _BookSitePageState extends State<BookSitePage> {
 
     _delegate = NavigationDelegate(
       onPageFinished: (_) async {
-        // debugPrint('delegate.onPageFinished:$jsString');
+        // logDebug('delegate.onPageFinished:$jsString');
         if (jsString != null) {
           final isBookPage =
               await _controller.runJavaScriptReturningResult(jsString!);
@@ -147,7 +147,7 @@ class _BookSitePageState extends State<BookSitePage> {
                 if (book != null) {
                   final res = await bloc.addAudioBook(book);
                   if (res) {
-                    message = 'Book is created on the bookshelf';
+                    message = 'The book is registered';
                   } else {
                     message = 'Failed to add to the bookshelf';
                   }
