@@ -17,6 +17,7 @@ import 'screens/settings/signin.dart';
 import 'screens/catalog/catalog.dart';
 import 'screens/wrapper.dart';
 import 'service/audiohandler.dart';
+import 'service/repository.dart';
 import 'shared/apptheme.dart';
 import 'shared/helpers.dart';
 import 'shared/notfound.dart';
@@ -58,23 +59,23 @@ void main() async {
   final appDocDir = await getApplicationDocumentsDirectory();
   appDocDirPath = appDocDir.path;
 
+  // check update
+  final repo = CartaRepo();
+  repo.checkVersion();
+
   // start app
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<ScreenConfig>(
             create: (context) => ScreenConfig()),
+        ChangeNotifierProvider<CartaRepo>(create: (_) => CartaRepo()),
         ChangeNotifierProvider<CartaAuth>(create: (_) => CartaAuth()),
         ChangeNotifierProxyProvider<CartaAuth, CartaBloc>(
           create: (_) => CartaBloc(handler),
           update: (_, auth, bloc) => bloc!..setUid(auth.uid),
         ),
-        // Provider<CartaAudioHandler>(
-        //   create: (context) {
-        //     handler.setLogic(context.read<CartaBloc>());
-        //     return handler;
-        //   },
-        //   dispose: (_, __) => handler.dispose()),
+	
       ],
       child: const MyApp(),
     ),

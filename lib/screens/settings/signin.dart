@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../logic/cartaauth.dart';
-import '../../shared/constants.dart';
+import '../../shared/settings.dart';
 import '../../shared/flutter_icons.dart';
 
 class SignInPage extends StatefulWidget {

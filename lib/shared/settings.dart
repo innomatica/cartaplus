@@ -1,10 +1,28 @@
-// urls for app
+// app info
+const appId = 'com.innomatic.cartaplus';
+const appName = 'Carta Plus';
+const appVersion = '2.6.0+35';
+const emailDeveloper = 'nuntium.ubique@gmail.com';
+
+// asset images
+const defaultAlbumImage = 'assets/images/open-book-512.png';
+const defaultLibriVoxImage = 'assets/images/book-cover-150x150.gif';
+const bookPanelBgndImage = 'assets/images/house_of_books.jpg';
+const sourceRepoUrlQrCode = 'assets/images/com.innomatic.cartaplus.png';
+
+// urls
+const urlHomePage = 'https://www.innomatic.ca';
 const urlSourceRepo = 'https://github.com/innomatica/cartaplus';
+const urlAppRelease = 'https://github.com/innomatica/cartaplus/releases';
 const urlPrivacyPolicy = 'https://innomatica.github.io/cartaplus/privacy/';
 const urlDisclaimer = 'https://innomatica.github.io/cartaplus/disclaimer/';
 const urlInstruction = 'https://innomatica.github.io/cartaplus/manual/';
 const urlAppIconSource = 'https://www.flaticon.com/free-icon/open-book_1940795';
 const urlStoreImageSource = 'https://unsplash.com/@florenciaviadana';
+
+// github
+const githubUser = 'innomatica';
+const githubRepo = 'Carta';
 
 // selected books
 const urlSelectedBooksJson =

@@ -91,8 +91,6 @@ class _SettingsPageState extends State<SettingsPage> {
     final servers = logic.servers;
     final myLibrary = logic.getMyLibrary();
     final titleStyle = TextStyle(color: Theme.of(context).colorScheme.tertiary);
-    // debugPrint('myLibrary: ${myLibrary.toString()}');
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListView(
