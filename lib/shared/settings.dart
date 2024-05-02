@@ -22,7 +22,7 @@ const urlStoreImageSource = 'https://unsplash.com/@florenciaviadana';
 
 // github
 const githubUser = 'innomatica';
-const githubRepo = 'Carta';
+const githubRepo = 'cartaplus';
 
 // selected books
 const urlSelectedBooksJson =
