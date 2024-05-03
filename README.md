@@ -21,9 +21,23 @@ Despite apparent absurdity of their reasoning, subsequent appeal yields no resul
 
 [Internet Archive](https://archive.org/) is a true historian in the age of internet. Please consider [supporting them](https://archive.org/donate?origin=iawww-TopNavDonateButton) and take time to think about how internet giants like Google and Facebook are shaping, thus inevitably distorting, our perception of reality.
 
-## WebDav Settings
+## Future of the App
 
-Note: as of this writing, only basic authentication is supported
+In the future is likely that this app is replaced by another, which does not rely on
+any commercial cloud service (Firebase in this case) in favor of a self-hosted backend server. Keep in mind that in such occasion, you need to spin up your own server and
+migrate your data by yourself. Thus we highly encourage current users to switch to [non-cloud version](https://github.com/innomatica/carta).
+
+## How to Build Your WebDAV Server
+
+The easiest way is to use [Nextcloud](https://nextcloud.com/). You can use run your own server or you can use one of the [Nextcloud service prividers](https://nextcloud.com/partners/).
+
+If you have a NAS, then you can spin up your WebDAV server using rclone or apache.
+
+### RClone
+
+```
+rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
+```
 
 ### Apache
 
@@ -86,15 +100,7 @@ a2ensite your.domain
 systemctl restart apache2
 ```
 
-### RClone
-
-```
-rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
-```
-
 ### References
 
-- [Apache HTTP Server Documentation](https://httpd.apache.org/docs/current/)
-- [How to Install Apache Server on Debian 11](https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-debian-11)
 - [How to Configure WebDav with Apache on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-configure-webdav-access-with-apache-on-ubuntu-18-04)
 - [rclone serve webdav](https://rclone.org/commands/rclone_serve_webdav/)
