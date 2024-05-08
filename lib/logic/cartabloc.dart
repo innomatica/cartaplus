@@ -70,13 +70,13 @@ class CartaBloc extends ChangeNotifier {
   }
 
   // set userId
-  void setUid(String? uid) {
+  Future<void> setUid(String? uid) async {
     _db.uid = uid;
     // valid user signed in
     if (uid is String) {
-      refreshBookServers();
-      refreshBooks();
-      refreshLibraries();
+      await refreshBookServers();
+      await refreshBooks();
+      await refreshLibraries();
     }
   }
 
@@ -104,22 +104,27 @@ class CartaBloc extends ChangeNotifier {
   // _handler.player.playerStateStream instead of _handler.playbackStateStream
   //
   void _handlePlayStateChange() {
-    _subPlayState = _handler.playerStateStream.listen((PlayerState state) {
-      logDebug('playerState: ${state.playing}  ${state.processingState}');
+    _subPlayState =
+        _handler.playerStateStream.listen((PlayerState state) async {
+      // logDebug('playerState: ${state.playing}  ${state.processingState}');
       if (state.processingState == ProcessingState.ready) {
         if (state.playing) {
           // logDebug('START: $currentBookId, $currentSectionIdx, $position');
         } else {
           // logDebug('PAUSED: $currentBookId, $currentSectionIdx, $position');
-          if (position.inSeconds > 0) _updateBookmark();
+          if (position.inSeconds > 0) await _updateBookmark();
         }
       } else if (state.processingState == ProcessingState.buffering) {
         if (state.playing) {
           // logDebug('SEEK: $currentBookId, $currentSectionIdx, $position');
-          if (position.inSeconds > 0) _updateBookmark();
+          if (position.inSeconds > 0) await _updateBookmark();
         } else {
           // you can update lastSection
           // logDebug('LOAD: $currentBookId, $currentSectionIdx, $position');
+        }
+      } else if (state.processingState == ProcessingState.completed) {
+        if (state.playing) {
+          await _resetBookmark();
         }
       }
     });
@@ -218,7 +223,7 @@ class CartaBloc extends ChangeNotifier {
   Future<bool> addAudioBook(CartaBook book) async {
     if (_books.length < maxBooksToCreate) {
       if (await _db.addAudioBook(book)) {
-        refreshBooks();
+        await refreshBooks();
         return true;
       }
     }
@@ -242,14 +247,14 @@ class CartaBloc extends ChangeNotifier {
     await book.deleteBookDirectory();
     // remove database entry
     if (await _db.deleteAudioBook(book)) {
-      refreshBooks();
+      await refreshBooks();
     }
   }
 
   // Update
   Future updateAudioBook(CartaBook book) async {
     if (await _db.updateAudioBook(book)) {
-      refreshBooks();
+      await refreshBooks();
     }
   }
 
@@ -261,8 +266,28 @@ class CartaBloc extends ChangeNotifier {
   // }
 
   // Update book.lastSection and book.lastPosition
-  Future _updateBookmark() async {
-    // TOOD:
+  Future _updateBookmark({bool refresh = true}) async {
+    if (currentBookId != null && currentSectionIdx != null) {
+      logWarn(
+          'updateBookmark.book:$currentBookId, lastSection:$currentSectionIdx,'
+          ' lastPosition:${_handler.position.inSeconds}');
+      await _db.updateBookData(currentBookId!, {
+        'lastSection': currentSectionIdx,
+        'lastPosition': secondsToHms(_handler.position.inSeconds),
+      });
+      if (refresh) refreshBooks();
+    }
+  }
+
+  Future _resetBookmark({bool refresh = true}) async {
+    logWarn('resetBoomark.book:$currentBookId');
+    if (currentBookId != null) {
+      await _db.updateBookData(currentBookId!, {
+        'lastSection': null,
+        'lastPosition': null,
+      });
+    }
+    if (refresh) refreshBooks();
   }
 
   // Book filter
@@ -328,7 +353,7 @@ class CartaBloc extends ChangeNotifier {
       notifyListeners();
       // break if cancelled
       if (_cancelRequests.contains(book.bookId)) {
-        logDebug('download canceled: ${book.title}');
+        // logDebug('download canceled: ${book.title}');
         break;
       }
       // otherwise go ahead
@@ -412,14 +437,14 @@ class CartaBloc extends ChangeNotifier {
   // Create
   Future addBookServer(CartaServer server) async {
     if (await _db.addBookServer(server)) {
-      refreshBookServers();
+      await refreshBookServers();
     }
   }
 
   // Update
   Future updateBookServer(CartaServer server) async {
     if (await _db.updateBookServer(server)) {
-      refreshBookServers();
+      await refreshBookServers();
     }
   }
 

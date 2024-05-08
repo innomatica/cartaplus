@@ -57,7 +57,7 @@ class _BookInfoViewState extends State<BookInfoView> {
         ),
       );
     } else {
-      logDebug('localDataState: ${localDataState['state']}');
+      // logDebug('localDataState: ${localDataState['state']}');
       switch (localDataState['state']) {
         case LocalDataState.none:
           // DOWNLOAD
