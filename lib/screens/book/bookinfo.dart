@@ -81,23 +81,6 @@ class _BookInfoViewState extends State<BookInfoView> {
     }
   }
 
-  // Widget _buildCacheButton(CartaBloc logic) {
-  //   final info = widget.book.info;
-  //   final cached = info['cached'] == true;
-  //   return TextButton(
-  //     onPressed: () async {
-  //       info['cached'] = !cached;
-  //       final flag =
-  //           await logic.updateBookData(widget.book.bookId, {'info': info});
-  //       if (flag) {
-  //         widget.book.info = info;
-  //         setState(() {});
-  //       }
-  //     },
-  //     child: Text(cached ? 'Download before play' : 'Cache disabled'),
-  //   );
-  // }
-
   Future<String?> _editField(String title, String? initialValue,
       {int maxLines = 1}) async {
     return showDialog<String>(

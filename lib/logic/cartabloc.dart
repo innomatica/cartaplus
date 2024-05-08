@@ -258,13 +258,6 @@ class CartaBloc extends ChangeNotifier {
     }
   }
 
-  // Update only certain fields of the book: the caller has to
-  //  1. do the conversion of the field
-  //  2. refresh screen contents when it returns true
-  // Future<bool> updateBookData(String bookId, Map<String, Object?> data) async {
-  //  return await _db.updateBookData(bookId, data);
-  // }
-
   // Update book.lastSection and book.lastPosition
   Future _updateBookmark({bool refresh = true}) async {
     if (currentBookId != null && currentSectionIdx != null) {
@@ -280,14 +273,14 @@ class CartaBloc extends ChangeNotifier {
   }
 
   Future _resetBookmark({bool refresh = true}) async {
-    logWarn('resetBoomark.book:$currentBookId');
     if (currentBookId != null) {
+      logWarn('resetBoomark.book:$currentBookId');
       await _db.updateBookData(currentBookId!, {
         'lastSection': null,
         'lastPosition': null,
       });
+      if (refresh) refreshBooks();
     }
-    if (refresh) refreshBooks();
   }
 
   // Book filter
@@ -451,7 +444,7 @@ class CartaBloc extends ChangeNotifier {
   // Delete
   Future deleteBookServer(CartaServer server) async {
     if (await _db.deleteBookServer(server)) {
-      refreshBookServers();
+      await refreshBookServers();
     }
   }
 
