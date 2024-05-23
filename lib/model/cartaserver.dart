@@ -1,7 +1,7 @@
 import '../enc_dec.dart';
 import '../shared/helpers.dart';
 
-enum ServerType { nextcloud, webdav, gdrive }
+enum ServerType { nextcloud, koofr, webdav }
 
 class CartaServer {
   String serverId;

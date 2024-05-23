@@ -1,3 +1,4 @@
+import 'package:cartaplus/shared/settings.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -5,7 +6,7 @@ class AppTheme {
     ColorScheme scheme = colorScheme ??
         ColorScheme.fromSeed(
           brightness: Brightness.light,
-          seedColor: Colors.indigoAccent,
+          seedColor: seedColorLight,
         );
     return ThemeData(colorScheme: scheme, useMaterial3: true);
   }
@@ -14,7 +15,7 @@ class AppTheme {
     ColorScheme scheme = colorScheme ??
         ColorScheme.fromSeed(
           brightness: Brightness.dark,
-          seedColor: Colors.indigoAccent,
+          seedColor: seedColorDark,
         );
     return ThemeData(colorScheme: scheme, useMaterial3: true);
   }

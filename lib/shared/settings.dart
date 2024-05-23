@@ -1,8 +1,12 @@
 // app info
+import 'package:flutter/material.dart';
+
 const appId = 'com.innomatic.cartaplus';
 const appName = 'Carta Plus';
 const appVersion = '2.6.0+35';
 const emailDeveloper = 'nuntium.ubique@gmail.com';
+const androidNotificationChannelId = 'com.innomatic.cartaplus.channel.audio';
+const androidNotificationChannelName = 'Carta playback';
 
 // asset images
 const defaultAlbumImage = 'assets/images/open-book-512.png';
@@ -55,6 +59,10 @@ bool isScreenWide = false;
 
 // bottom padding
 const double bottomPadding = 52.0;
+
+// seed color
+const seedColorLight = Colors.indigoAccent;
+const seedColorDark = Colors.indigoAccent;
 
 // account limits
 const int maxBooksToCreate = 50;
