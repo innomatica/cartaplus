@@ -1,5 +1,6 @@
-import 'package:cartaplus/shared/settings.dart';
 import 'package:flutter/material.dart';
+
+import './settings.dart';
 
 class AppTheme {
   static ThemeData lightTheme(ColorScheme? colorScheme) {

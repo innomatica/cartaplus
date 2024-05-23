@@ -172,7 +172,7 @@ class CartaBook {
         if (section.index >= initIndex) {
           // build tag
           final tag = MediaItem(
-            id: bookId,
+            id: section.uri,
             // section title as title
             title: section.title,
             // book title as album

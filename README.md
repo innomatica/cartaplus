@@ -1,45 +1,66 @@
 # Carta Plus
 
-Carta Plus is [Carta](https://github.com/innomatica/carta) with a backend server, through
-which you can share your audiobooks.
+Carta Plus shares the same feature as [Carta](https://github.com/innomatica/carta)
+except that it stores app information on the cloud. It allows users to 
+maintain the same bookshelf over different devices. Also some communal reading
+experience can be possible, such as in a classroom or bookclub situation.
+
 
 # Note to Users
 
-As of April 2024, this app is banned and its store is shut down from Google Play due the violation of their Violent Extremism policy. This requires explanation for the current and future users of this app.
+As of April 2024, this app is banned and its store is shut down from Google Play
+due the violation of their Violent Extremism policy. This requires explanation 
+for the current and future users of this app.
 
-This app is designed to listen to free online audiobooks from
+One of the features of this app is to allow users to freely navigate 
+[Internet Archive](https://archive.org/) for their vast collection of audio 
+materials using Android System [WebView](https://en.wikipedia.org/wiki/WebView). 
+Then the app automatically detects information about audiobooks on their pages 
+so that users can bring those to their bookshelves.
 
-- [LibriVox](https://librivox.org/)
-- [Internet Archive](https://archive.org/)
-- [Legamus](https://legamus.eu/blog/)
+What Google alleges is that certain audio materials, arabic language ones 
+specifically, on the aforementioned Internet Archive are regarded as extremism 
+propaganda. And by extension, this app is promoting extremism.
 
-You can navigate those websites within the app using Android System [WebView](https://en.wikipedia.org/wiki/WebView) feature. Then the app automatically detects information about audiobooks on their pages and allows you to bring them to your bookshelf.
+Despite apparent absurdity of their reasoning, subsequent appeal yields no 
+result. And the author has no intention to remove the link to Internet Archive. 
+Thus from the version 2.6 onward, this app will be released as apk format 
+directly from this repository until better alternative is found.
 
-What Google alleges is that certain audio materials, arabic language ones specifically, on the aforementioned Internet Archive are regarded as extremism propaganda. And by extension, this app is promoting extremism. Too easy!
+[Internet Archive](https://archive.org/) is a true historian in the age of 
+internet. Please consider 
+[supporting them](https://archive.org/donate?origin=iawww-TopNavDonateButton) 
+and take time to think about how internet giants like Google and Facebook are 
+shaping, thus inevitably distorting, our perception of reality.
 
-Despite apparent absurdity of their reasoning, subsequent appeal yields no result. And the author has no intention to remove the link to Internet Archive. Thus from the version 2.6 onward, this app will be released as apk format directly from this repository until better alternative is found.
+# Future of the App
 
-[Internet Archive](https://archive.org/) is a true historian in the age of internet. Please consider [supporting them](https://archive.org/donate?origin=iawww-TopNavDonateButton) and take time to think about how internet giants like Google and Facebook are shaping, thus inevitably distorting, our perception of reality.
+In the near future it is likely that this app is replaced by another, which does 
+not rely on any commercial cloud service (Firebase in this case) in favor of a 
+self-hosted backend server. Keep in mind that in such occasion, you need to 
+spin up your own server and migrate your data by yourself. 
 
-## Future of the App
+If you do not need communal reading experience, you probably do not need this
+app. Thus we **highly encourage current users to switch to** 
+[Carta](https://github.com/innomatica/carta).
 
-In the future is likely that this app is replaced by another, which does not rely on
-any commercial cloud service (Firebase in this case) in favor of a self-hosted backend server. Keep in mind that in such occasion, you need to spin up your own server and
-migrate your data by yourself. Thus we highly encourage current users to switch to [non-cloud version](https://github.com/innomatica/carta).
+# [How to Use this App](https://innomatica.github.io/carta/manual/)
 
 ## How to Build Your WebDAV Server
 
-The easiest way is to use [Nextcloud](https://nextcloud.com/). You can use run your own server or you can use one of the [Nextcloud service prividers](https://nextcloud.com/partners/).
+The easiest way is to use [Nextcloud](https://nextcloud.com/). You can use run 
+your own server or you can use one of the 
+[Nextcloud service prividers](https://nextcloud.com/partners/).
 
 If you have a NAS, then you can spin up your WebDAV server using rclone or apache.
 
-### RClone
+### Running RClone
 
 ```
 rclone serve webdav --addr :8080 --user username --pass password /var/www/webdav
 ```
 
-### Apache
+### Apache Settings
 
 - `/etc/apache2/ports.conf`
 
