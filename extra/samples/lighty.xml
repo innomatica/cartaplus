@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<D:multistatus xmlns:D="DAV:" xmlns:ns0="urn:uuid:c2f41010-65b3-11d1-a29f-00aa00c14882/">
+    <D:response>
+        <D:href>/dav/</D:href>
+        <D:propstat>
+            <D:prop>
+                <D:getcontentlength>4096</D:getcontentlength>
+                <D:getcontenttype>httpd/unix-directory</D:getcontenttype>
+                <D:getetag>"2482331092"</D:getetag>
+                <D:getlastmodified ns0:dt="dateTime.rfc1123">Sat, 27 Apr 2024 20:59:20 GMT</D:getlastmodified>
+                <D:resourcetype>
+                    <D:collection />
+                </D:resourcetype>
+                <D:supportedlock>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:exclusive />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:shared />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                </D:supportedlock>
+                <D:lockdiscovery></D:lockdiscovery>
+            </D:prop>
+            <D:status>HTTP/1.1 200 OK</D:status>
+        </D:propstat>
+    </D:response>
+    <D:response>
+        <D:href>/dav/lost%2Bfound/</D:href>
+        <D:propstat>
+            <D:prop>
+                <D:getcontentlength>16384</D:getcontentlength>
+                <D:getcontenttype>httpd/unix-directory</D:getcontenttype>
+                <D:getetag>"941003004"</D:getetag>
+                <D:getlastmodified ns0:dt="dateTime.rfc1123">Sat, 27 Apr 2024 20:40:49 GMT</D:getlastmodified>
+                <D:resourcetype>
+                    <D:collection />
+                </D:resourcetype>
+                <D:supportedlock>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:exclusive />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:shared />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                </D:supportedlock>
+                <D:lockdiscovery></D:lockdiscovery>
+            </D:prop>
+            <D:status>HTTP/1.1 200 OK</D:status>
+        </D:propstat>
+    </D:response>
+    <D:response>
+        <D:href>/dav/Ebook/</D:href>
+        <D:propstat>
+            <D:prop>
+                <D:getcontentlength>4096</D:getcontentlength>
+                <D:getcontenttype>httpd/unix-directory</D:getcontenttype>
+                <D:getetag>"2339724756"</D:getetag>
+                <D:getlastmodified ns0:dt="dateTime.rfc1123">Sat, 27 Apr 2024 20:59:20 GMT</D:getlastmodified>
+                <D:resourcetype>
+                    <D:collection />
+                </D:resourcetype>
+                <D:supportedlock>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:exclusive />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:shared />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                </D:supportedlock>
+                <D:lockdiscovery></D:lockdiscovery>
+            </D:prop>
+            <D:status>HTTP/1.1 200 OK</D:status>
+        </D:propstat>
+    </D:response>
+    <D:response>
+        <D:href>/dav/Abook/</D:href>
+        <D:propstat>
+            <D:prop>
+                <D:getcontentlength>4096</D:getcontentlength>
+                <D:getcontenttype>httpd/unix-directory</D:getcontenttype>
+                <D:getetag>"2311730464"</D:getetag>
+                <D:getlastmodified ns0:dt="dateTime.rfc1123">Mon, 29 Apr 2024 11:10:56 GMT</D:getlastmodified>
+                <D:resourcetype>
+                    <D:collection />
+                </D:resourcetype>
+                <D:supportedlock>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:exclusive />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                    <D:lockentry>
+                        <D:lockscope>
+                            <D:shared />
+                        </D:lockscope>
+                        <D:locktype>
+                            <D:write />
+                        </D:locktype>
+                    </D:lockentry>
+                </D:supportedlock>
+                <D:lockdiscovery></D:lockdiscovery>
+            </D:prop>
+            <D:status>HTTP/1.1 200 OK</D:status>
+        </D:propstat>
+    </D:response>
+</D:multistatus>
