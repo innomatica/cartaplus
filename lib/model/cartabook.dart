@@ -349,9 +349,9 @@ class CartaBook {
   // return cover image
   // DO NOT make this function ASYNC
   ImageProvider getCoverImage() {
-    final bookDir = getBookDirectory();
     // validate imageUri
     if (imageUri != null) {
+      final bookDir = getBookDirectory();
       try {
         final file = File('${bookDir.path}/${imageUri!.split('/').last}');
         if (file.existsSync()) {
@@ -360,8 +360,8 @@ class CartaBook {
         }
         // logDebug('albumImage:NetworkImage');
         // NOTE: do not use AWAIT here
-        downloadCoverImage();
-        // this will download the image twice but for the first time only
+        // THIS WILL CRASH WHEN BOOK IS BEING DELETED
+        // downloadCoverImage();
         return NetworkImage(imageUri!, headers: getAuthHeaders());
       } catch (e) {
         logError(e.toString());

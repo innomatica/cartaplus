@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 const appId = 'com.innomatic.cartaplus';
 const appName = 'Carta Plus';
-const appVersion = '2.6.1+36';
+const appVersion = '2.6.2+37';
 const emailDeveloper = 'nuntium.ubique@gmail.com';
 const androidNotificationChannelId = 'com.innomatic.cartaplus.channel.audio';
 const androidNotificationChannelName = 'Carta playback';
