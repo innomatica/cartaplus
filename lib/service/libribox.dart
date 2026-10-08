@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:feed_parser/feed_parser.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 
 import '../model/cartabook.dart';
 import '../model/cartasection.dart';
 import '../shared/helpers.dart';
+import 'librivox_feed.dart';
 
 const urlLibriVox = 'https://librivox.org/';
 const urlLibriVoxBooks = 'https://librivox.org/api/feed/audiobooks';
@@ -79,8 +79,8 @@ class LibriVoxService {
       }
       // parse the feed
       try {
-        final feedData = FeedData.parse(res.body);
-        if (feedData.items == null) {
+        final feedItems = parseLibriVoxFeed(res.body);
+        if (feedItems.isEmpty) {
           // section information is mandatory
           logError('getSupplmentaryData: failed to parse RSS data');
           return false;
@@ -90,15 +90,15 @@ class LibriVoxService {
         //
         book.sections = <CartaSection>[];
         int index = 0;
-        for (final item in feedData.items!) {
+        for (final item in feedItems) {
           final section = CartaSection(
-            title: item.title ?? 'Unknown Section',
+            title: item.title,
             // index: item.itunes?.episode ?? index,
             index: index,
             // uri: item.enclosure?.url ?? '',
             // duration: item.itunes?.duration,
-            uri: item.media?[0].url ?? '',
-            duration: item.media?[0].duration ?? 0,
+            uri: item.url,
+            duration: item.duration,
             info: {},
           );
           // logDebug(section.toString());
