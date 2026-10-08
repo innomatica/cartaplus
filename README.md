@@ -46,6 +46,42 @@ app. Thus we **highly encourage current users to switch to**
 
 # [How to Use this App](https://innomatica.github.io/carta/manual/)
 
+## Google Drive storage build
+
+This branch stores each book and WebDAV server record in the signed-in user's
+Google Drive application data folder. It requests the `drive.appdata` scope for
+those private records and `drive.file` to create a shareable library file. The
+app syncs records when signing in and after edits; it currently needs a network
+connection to change the bookshelf. WebDAV usernames and passwords are kept in
+the device's secure storage and are not uploaded to Drive. Enter them again on
+each device.
+
+Before building an Android APK:
+
+1. Create a Google Cloud project and enable the Google Drive API.
+2. Configure its OAuth consent screen for the Drive scopes above.
+3. Register an Android OAuth client for the APK's application ID and signing
+   certificate SHA-1. Debug and release signing keys need separate entries.
+4. Register a Web OAuth client in the same project. Supply its client ID with
+   `--dart-define=GOOGLE_WEB_CLIENT_ID=...` when running or building Flutter.
+5. Create an API key for reading link-shared public library JSON files and
+   supply it with `--dart-define=DRIVE_PUBLIC_API_KEY=...`. Restrict the key to
+   the Google Drive API. An API key is public in a mobile APK and is not used as
+   an authentication secret.
+
+For example:
+
+```
+flutter build apk --dart-define=GOOGLE_WEB_CLIENT_ID=YOUR_WEB_CLIENT_ID \
+  --dart-define=DRIVE_PUBLIC_API_KEY=YOUR_DRIVE_API_KEY
+```
+
+The old Firestore bookshelf is not copied automatically. This build uses a
+different storage backend and needs a separate export from the old backend for
+migration. A library owner can share the library's Google Drive link from
+Settings; anyone with that link can read its book list. Shared library records
+do not contain WebDAV credentials.
+
 ## How to Build Your WebDAV Server
 
 The easiest way is to use [Nextcloud](https://nextcloud.com/). You can use run 

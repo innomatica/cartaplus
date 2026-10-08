@@ -1,4 +1,3 @@
-import '../enc_dec.dart';
 import '../shared/helpers.dart';
 
 enum ServerType { nextcloud, koofr, webdav }
@@ -25,15 +24,7 @@ class CartaServer {
         title: doc?['title'],
         type: ServerType.values[doc?['type'] ?? 0],
         url: doc?['url'],
-        settings: doc?['settings'] == null
-            ? null
-            : (doc?['settings'] as Map<String, dynamic>)
-                .map((key, value) => MapEntry(
-                      key,
-                      ['password', 'username'].contains(key)
-                          ? decrypt(value)
-                          : value,
-                    )),
+        settings: doc?['settings'] as Map<String, dynamic>?,
       );
     } catch (e) {
       logError(e.toString());
@@ -47,10 +38,7 @@ class CartaServer {
       'title': title,
       'type': type.index,
       'url': url,
-      'settings': settings?.map((key, value) => MapEntry(
-            key,
-            ['password', 'username'].contains(key) ? encrypt(value) : value,
-          )),
+      'settings': settings,
     };
   }
 

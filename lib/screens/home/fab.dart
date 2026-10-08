@@ -72,30 +72,35 @@ Widget buildFabDialog(BuildContext context) {
         //
         for (final library in logic.libraries)
           TextButton.icon(
-            onPressed: () {
-              logic.refreshLibraries();
+            onPressed: () async {
+              await logic.refreshLibraries();
+              final current = logic.libraries.firstWhere(
+                (item) => item.id == library.id,
+                orElse: () => library,
+              );
+              if (!context.mounted) return;
               Navigator.of(context).pop();
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text(library.title),
+                  title: Text(current.title),
                   content: SizedBox(
                     width: double.maxFinite,
                     child: ListView.builder(
                       shrinkWrap: true,
-                      itemCount: library.books.length,
+                      itemCount: current.books.length,
                       itemBuilder: (context, index) {
                         return Card(
                           child: ListTile(
                             title: Text(
-                              library.books[index].title,
+                              current.books[index].title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            onTap: logic.uid == library.owner
+                            onTap: logic.uid == current.owner
                                 ? null
                                 : () =>
-                                    logic.addAudioBook(library.books[index]),
+                                    logic.addAudioBook(current.books[index]),
                           ),
                         );
                       },

@@ -1,70 +1,81 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-// Important note about the exceptions: You may not able to catch the exceptions.
-// And it is not likely that the Google will fix this ever. You can only hope
-// that it won't happen in the real devices:
-// https://github.com/firebase/flutterfire/issues/725#issuecomment-657030135
+const driveScopes = <String>[
+  'https://www.googleapis.com/auth/drive.appdata',
+  'https://www.googleapis.com/auth/drive.file',
+];
 
+/// Google Sign-In supplies short-lived Drive tokens; no Firebase account is
+/// required. The Android package and signing certificate must have an OAuth
+/// client in the application's Google Cloud project.
 class CartaAuth extends ChangeNotifier {
-  final _auth = FirebaseAuth.instance;
-  late final StreamSubscription _authListener;
+  CartaAuth()
+      : _google = GoogleSignIn(
+          scopes: driveScopes,
+          serverClientId:
+              const String.fromEnvironment('GOOGLE_WEB_CLIENT_ID').isEmpty
+                  ? null
+                  : const String.fromEnvironment('GOOGLE_WEB_CLIENT_ID'),
+        ) {
+    _listener = _google.onCurrentUserChanged.listen((account) {
+      _user = account;
+      notifyListeners();
+    });
+    _google.signInSilently().then((account) {
+      _user = account;
+      notifyListeners();
+    }).catchError((Object error) {
+      lastError = error.toString();
+      notifyListeners();
+    });
+  }
 
-  User? _user;
-  bool loggedIn = false;
+  final GoogleSignIn _google;
+  late final StreamSubscription<GoogleSignInAccount?> _listener;
+  GoogleSignInAccount? _user;
   String lastError = '';
 
-  CartaAuth() {
-    _authListener = _auth.authStateChanges().listen((newUser) {
-      _user = newUser;
-      // debugPrint('auth listener notified user change: $newUser');
+  GoogleSignInAccount? get user => _user;
+  String? get uid => _user?.id;
+  bool get isAuthenticated => _user != null;
+
+  Future<String> accessToken() async {
+    final account = _user;
+    if (account == null) throw StateError('Sign in to use Google Drive');
+    final auth = await account.authentication;
+    final token = auth.accessToken;
+    if (token == null) throw StateError('Google Drive access was not granted');
+    return token;
+  }
+
+  Future<GoogleSignInAccount?> signInWithGoogle() async {
+    lastError = '';
+    try {
+      final account = await _google.signIn();
+      _user = account;
       notifyListeners();
-    }, onError: (e) {
-      debugPrint('authStateChanges Error: $e');
-    });
+      return account;
+    } on PlatformException catch (error) {
+      lastError = '${error.code}: ${error.message ?? ''}';
+    } catch (error) {
+      lastError = error.toString();
+    }
+    return null;
+  }
+
+  Future<void> signOut() async {
+    await _google.signOut();
+    _user = null;
+    notifyListeners();
   }
 
   @override
   void dispose() {
-    _authListener.cancel();
+    _listener.cancel();
     super.dispose();
-  }
-
-  User? get user => _user;
-  String? get uid => _user?.uid;
-  bool get isAuthenticated => _user != null;
-
-  Future<void> signOut() async {
-    await _auth.signOut();
-  }
-
-  Future<void> reload() async {
-    await _auth.currentUser?.reload();
-    _user = _auth.currentUser;
-    notifyListeners();
-  }
-
-  Future<UserCredential?> signInWithGoogle() async {
-    try {
-      final account = await GoogleSignIn().signIn();
-      final auth = await account?.authentication;
-      final credential = GoogleAuthProvider.credential(
-          accessToken: auth?.accessToken, idToken: auth?.idToken);
-      return _auth.signInWithCredential(credential);
-    } on PlatformException catch (e) {
-      // don't be alarmed if this does not catch the exception
-      // this is one of the never-fixed bugs in Firebase
-      // https://stackoverflow.com/questions/56080818/how-to-catch-platformexception-in-flutter-dart
-      lastError = e.code;
-    } on FirebaseAuthException catch (e) {
-      lastError = e.code;
-    } catch (e) {
-      lastError = e.toString();
-    }
-    return null;
   }
 }

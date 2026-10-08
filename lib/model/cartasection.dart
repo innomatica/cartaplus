@@ -38,7 +38,10 @@ class CartaSection {
       'uri': uri,
       'duration': secondsToHms(duration),
       // 'seekPos': seekPos ?? 0,
-      'info': jsonEncode(info),
+      // Section credentials are never needed: CartaBook supplies auth headers.
+      'info': jsonEncode({...info}
+        ..remove('username')
+        ..remove('password')),
     };
   }
 

@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:mime/mime.dart';
 
-import '../enc_dec.dart';
 import '../shared/helpers.dart';
 import '../shared/settings.dart';
 import 'cartacard.dart';
@@ -109,8 +108,8 @@ class CartaBook {
         lastPosition: hmsToSeconds(data?['lastPosition']),
         source: CartaSource.values[data?['source']],
         info: data?['info'],
-        sections: data?['sections']
-            .map<CartaSection>((e) => CartaSection.fromDatabase(e))
+        sections: (data?['sections'] as List?)
+            ?.map<CartaSection>((e) => CartaSection.fromDatabase(e))
             .toList(),
       );
     } catch (e) {
@@ -235,8 +234,8 @@ class CartaBook {
         info.containsKey('username') &&
         info.containsKey('password')) {
       // logDebug('info: $info');
-      final username = decrypt(info['username']);
-      final password = decrypt(info['password']);
+      final username = info['username'] as String;
+      final password = info['password'] as String;
       // logDebug('username: $username, password: $password');
       final credential = base64Encode(utf8.encode('$username:$password'));
       return {

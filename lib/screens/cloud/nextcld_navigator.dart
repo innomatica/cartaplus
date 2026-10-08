@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../logic/cartabloc.dart';
-import '../../enc_dec.dart';
 import '../../model/cartabook.dart';
 import '../../model/cartasection.dart';
 import '../../model/cartaserver.dart';
@@ -67,8 +66,8 @@ class _NextCloudNavigatorState extends State<NextCloudNavigator> {
           uri: '$urlPrefix/$fileName',
           info: {
             'authentication': 'basic',
-            'username': encrypt(user),
-            'password': encrypt(pass),
+            'username': user,
+            'password': pass,
           },
         );
         sections.add(section);
